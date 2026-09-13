@@ -34,29 +34,12 @@ jobs:
         run: |
           if [ -n "$KEYSTORE_BASE64" ]; then
             echo "$KEYSTORE_BASE64" | base64 -d > release.jks
-            cat > keystore.properties <<EOF
-            storeFile=release.jks
-            storePassword=$KEYSTORE_PASSWORD
-            keyAlias=$KEYSTORE_ALIAS
-            keyPassword=$KEYSTORE_PASSWORD
-            EOF
+            printf 'storeFile=release.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+              "$KEYSTORE_PASSWORD" "$KEYSTORE_ALIAS" "$KEYSTORE_PASSWORD" > keystore.properties
             ./gradlew assembleRelease
             cp app/build/outputs/apk/release/app-release.apk "快递取件-${{ github.ref_name }}.apk"
           else
-            set +e
-            ./gradlew assembleDebug --stacktrace > build_out.log 2>&1
-            STATUS=$?
-            tail -n 80 build_out.log
-            if [ $STATUS -ne 0 ]; then
-              cp build_out.log ci-build-error.txt
-              git config user.name "github-actions"
-              git config user.email "actions@github.com"
-              git add -f ci-build-error.txt
-              git commit -m "CI 构建错误日志" || true
-              git push -f origin HEAD:ci-diagnose || true
-              GH_TOKEN="${{ github.token }}" gh release create "ci-error-${{ github.run_id }}" ci-build-error.txt --repo "$GITHUB_REPOSITORY" --title "CI 构建错误" --notes "诊断信息" || true
-              exit $STATUS
-            fi
+            ./gradlew assembleDebug
             cp app/build/outputs/apk/debug/app-debug.apk "快递取件-${{ github.ref_name }}.apk"
           fi
           ls -la 快递取件-*.apk
@@ -65,21 +48,20 @@ jobs:
         run: |
           APK=$(ls 快递取件-*.apk | head -n1)
           SHA=$(sha256sum "$APK" | awk '{print $1}')
-          cat > release_body.md <<EOF
-          ## 下载说明
-
-          - 版本：${{ github.ref_name }}
-          - 适用系统：Android 6.0 及以上
-          - 应用包名：cn.pickup.launcher
-          - 安装文件：$APK
-          - SHA-256：\`$SHA\`
-
-          ## 本次更新
-
-          - 淘宝、拼多多待取件直达入口，一键跳转到待取列表
-          - 对应 App 未安装时自动尝试网页入口
-          - 详细说明见 README
-          EOF
+          printf '%s\n' \
+            "## 下载说明" \
+            "" \
+            "- 版本：${{ github.ref_name }}" \
+            "- 适用系统：Android 6.0 及以上" \
+            "- 应用包名：cn.pickup.launcher" \
+            "- 安装文件：$APK" \
+            "- SHA-256：\`$SHA\`" \
+            "" \
+            "## 本次更新" \
+            "" \
+            "- 淘宝、拼多多待取件直达入口，一键跳转到待取列表" \
+            "- 对应 App 未安装时自动尝试网页入口" \
+            "- 详细说明见 README" > release_body.md
 
       - name: 发布 Release
         uses: softprops/action-gh-release@v2
