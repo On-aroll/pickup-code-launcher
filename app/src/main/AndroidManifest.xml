@@ -2,15 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <queries>
-        <package android:name="com.cainiao.wireless" />
         <package android:name="com.taobao.taobao" />
         <package android:name="com.xunmeng.pinduoduo" />
         <package android:name="com.jingdong.app.mall" />
         <package android:name="com.xingin.xhs" />
-        <intent>
-            <action android:name="android.intent.action.VIEW" />
-            <data android:scheme="cainiao" />
-        </intent>
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="tbopen" />

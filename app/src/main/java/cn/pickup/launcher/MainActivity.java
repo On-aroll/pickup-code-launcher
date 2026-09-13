@@ -40,9 +40,6 @@ public final class MainActivity extends Activity {
         if (ACTION_OPEN.equals(action)) {
             return Destination.fromKey(getIntent().getStringExtra(EXTRA_DESTINATION));
         }
-        if ("cn.pickup.launcher.OPEN_CAINIAO".equals(action)) {
-            return Destination.CAINIAO;
-        }
         if ("cn.pickup.launcher.OPEN_TAOBAO".equals(action)) {
             return Destination.TAOBAO;
         }
@@ -94,13 +91,6 @@ public final class MainActivity extends Activity {
         description.setLayoutParams(descriptionParams);
         root.addView(description);
 
-        root.addView(serviceRow(
-                Destination.CAINIAO,
-                "菜鸟驿站取件",
-                "优先打开身份码，失败时进入菜鸟 App",
-                Color.rgb(231, 244, 235),
-                Color.rgb(20, 120, 72)
-        ));
         root.addView(serviceRow(
                 Destination.TAOBAO,
                 "淘宝取件",
@@ -180,8 +170,7 @@ public final class MainActivity extends Activity {
 
         LinearLayout shortcutButtons = new LinearLayout(this);
         shortcutButtons.setOrientation(LinearLayout.HORIZONTAL);
-        shortcutButtons.setWeightSum(3f);
-        addPinButton(shortcutButtons, Destination.CAINIAO, "菜鸟码");
+        shortcutButtons.setWeightSum(2f);
         addPinButton(shortcutButtons, Destination.TAOBAO, "淘宝码");
         addPinButton(shortcutButtons, Destination.PINDUODUO, "拼多多码");
         root.addView(shortcutButtons);

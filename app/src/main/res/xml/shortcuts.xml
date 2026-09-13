@@ -5,17 +5,6 @@
     tools:targetApi="25">
     <shortcut
         android:enabled="true"
-        android:icon="@drawable/ic_shortcut_cainiao"
-        android:shortcutId="cainiao"
-        android:shortcutLongLabel="@string/shortcut_cainiao"
-        android:shortcutShortLabel="@string/shortcut_cainiao">
-        <intent
-            android:action="cn.pickup.launcher.OPEN_CAINIAO"
-            android:targetClass="cn.pickup.launcher.MainActivity"
-            android:targetPackage="cn.pickup.launcher" />
-    </shortcut>
-    <shortcut
-        android:enabled="true"
         android:icon="@drawable/ic_shortcut_taobao"
         android:shortcutId="taobao"
         android:shortcutLongLabel="@string/shortcut_taobao"

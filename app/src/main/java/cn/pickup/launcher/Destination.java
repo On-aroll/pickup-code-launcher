@@ -3,17 +3,6 @@ package cn.pickup.launcher;
 import java.util.Locale;
 
 enum Destination {
-    CAINIAO(
-            "cainiao",
-            "菜鸟身份码",
-            "菜",
-            "com.cainiao.wireless",
-            new String[] {
-                    "cainiao://desktop/station_code"
-            },
-            "https://market.m.taobao.com/app/cn-yz/multi-activity/authCode.html?bizEntry=ALIPAY_GUOGUO",
-            true
-    ),
     TAOBAO(
             "taobao",
             "淘宝身份码",
