@@ -34,6 +34,7 @@ https://github.com/On-aroll/pickup-code-launcher/releases/latest
 - 接入 GitHub Actions，推送版本标签后自动构建并发布 APK
 - 移除菜鸟入口，精简为淘宝、拼多多、京东、小红书
 - 拼多多入口改为直达「我的订单」页，取件与收货状态一目了然
+- 拼多多入口优先定位待收货列表（含待取件入口），并保留订单列表与个人中心兜底
 
 ## Android 构建
 
@@ -87,6 +88,6 @@ keytool -genkeypair -v -keystore release-keystore.jks -keyalg RSA -keysize 2048 
 
 本项目使用 MIT License。
 
-当前版本：2.1.2
+当前版本：2.1.3
 
 最后核对日期：2026-09-13。

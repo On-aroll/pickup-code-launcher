@@ -43,8 +43,9 @@ enum Destination {
             "拼",
             "com.xunmeng.pinduoduo",
             new String[] {
-                    "pinduoduo://com.xunmeng.pinduoduo/index.html?index=4&pr_tab_link=personal.html",
-                    "pinduoduo://com.xunmeng.pinduoduo/order_list.html"
+                    "pinduoduo://com.xunmeng.pinduoduo/orders.html?type=3&comment_tab=1&combine_orders=1&main_orders=1&refer_page_name=personal",
+                    "pinduoduo://com.xunmeng.pinduoduo/orders.html",
+                    "pinduoduo://com.xunmeng.pinduoduo/index.html?index=4&pr_tab_link=personal.html"
             },
             "https://mobile.yangkeduo.com/orders.html"
     ),

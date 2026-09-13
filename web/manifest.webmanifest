@@ -31,9 +31,9 @@
       "url": "pinduoduo://com.xunmeng.pinduoduo/mdkd/package?tab=ID_CODE&entry_source=11"
     },
     {
-      "name": "拼多多订单",
-      "short_name": "拼多多订单",
-      "url": "pinduoduo://com.xunmeng.pinduoduo/index.html?index=4&pr_tab_link=personal.html"
+      "name": "拼多多待取",
+      "short_name": "拼多多待取",
+      "url": "pinduoduo://com.xunmeng.pinduoduo/orders.html?type=3&comment_tab=1&combine_orders=1&main_orders=1&refer_page_name=personal"
     },
     {
       "name": "京东待取快递",
