@@ -48,12 +48,13 @@ jobs:
             STATUS=$?
             tail -n 80 build_out.log
             if [ $STATUS -ne 0 ]; then
+              cp build_out.log ci-build-error.txt
               git config user.name "github-actions"
               git config user.email "actions@github.com"
-              cp build_out.log ci-build-error.txt
               git add -f ci-build-error.txt
               git commit -m "CI 构建错误日志" || true
               git push -f origin HEAD:ci-diagnose || true
+              GH_TOKEN="${{ github.token }}" gh release create "ci-error-${{ github.run_id }}" ci-build-error.txt --repo "$GITHUB_REPOSITORY" --title "CI 构建错误" --notes "诊断信息" || true
               exit $STATUS
             fi
             cp app/build/outputs/apk/debug/app-debug.apk "快递取件-${{ github.ref_name }}.apk"
