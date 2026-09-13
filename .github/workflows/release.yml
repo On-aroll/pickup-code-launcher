@@ -7,7 +7,6 @@ on:
 
 permissions:
   contents: write
-  issues: write
 
 jobs:
   build:
@@ -44,19 +43,7 @@ jobs:
             ./gradlew assembleRelease
             cp app/build/outputs/apk/release/app-release.apk "快递取件-${{ github.ref_name }}.apk"
           else
-            set +e
-            OUT=$(./gradlew assembleDebug --stacktrace 2>&1)
-            STATUS=$?
-            printf "%s\n" "$OUT" | tail -n 60
-            if [ $STATUS -ne 0 ]; then
-              printf "%s\n" "$OUT" | tail -n 200 > ci-build-error.txt
-              git config user.name "github-actions"
-              git config user.email "actions@github.com"
-              git add -f ci-build-error.txt
-              git commit -m "CI 构建错误日志" || true
-              git push -f origin HEAD:ci-diagnose || true
-              exit $STATUS
-            fi
+            ./gradlew assembleDebug
             cp app/build/outputs/apk/debug/app-debug.apk "快递取件-${{ github.ref_name }}.apk"
           fi
           ls -la 快递取件-*.apk
