@@ -135,6 +135,7 @@ public final class ShortcutSettingsActivity extends Activity {
     private boolean onContainerDrag(View view, DragEvent event) {
         switch (event.getAction()) {
             case DragEvent.ACTION_DRAG_STARTED:
+                renderList();
                 return true;
             case DragEvent.ACTION_DRAG_LOCATION:
             case DragEvent.ACTION_DROP:
@@ -144,12 +145,13 @@ public final class ShortcutSettingsActivity extends Activity {
                     if (from >= 0 && to >= 0 && from != to) {
                         order.remove(from);
                         order.add(to, draggedKey);
-                        renderList();
+                        renderList(true);
                     }
                 }
                 return true;
             case DragEvent.ACTION_DRAG_ENDED:
                 draggedKey = null;
+                renderList();
                 return true;
             default:
                 return true;
@@ -168,9 +170,35 @@ public final class ShortcutSettingsActivity extends Activity {
     }
 
     private void renderList() {
+        renderList(false);
+    }
+
+    private void renderList(boolean animate) {
+        java.util.Map<String, Integer> oldTops = new java.util.HashMap<>();
+        for (int i = 0; i < listContainer.getChildCount(); i++) {
+            View child = listContainer.getChildAt(i);
+            Object tag = child.getTag();
+            if (tag instanceof String) {
+                oldTops.put((String) tag, child.getTop());
+            }
+        }
         listContainer.removeAllViews();
         for (int i = 0; i < order.size(); i++) {
-            listContainer.addView(buildRow(order.get(i), i));
+            String key = order.get(i);
+            View row = buildRow(key, i);
+            row.setTag(key);
+            listContainer.addView(row);
+            Integer oldTop = oldTops.get(key);
+            if (animate && oldTop != null && oldTop != row.getTop()) {
+                row.setTranslationY(oldTop - row.getTop());
+                row.animate().translationY(0).setDuration(140).start();
+            }
+            if (key.equals(draggedKey)) {
+                row.setAlpha(0.45f);
+                GradientDrawable bg = rounded(Color.rgb(231, 244, 235), 8);
+                bg.setStroke(dp(2), ACCENT);
+                row.setBackground(bg);
+            }
         }
     }
 
@@ -205,37 +233,7 @@ public final class ShortcutSettingsActivity extends Activity {
         handle.setOnLongClickListener(view -> startDrag(key, handle));
         row.addView(handle, new LinearLayout.LayoutParams(dp(40), dp(50)));
 
-        if (index > 0) {
-            TextView up = arrowButton("↑", "上移" + labelOf(this, key));
-            up.setOnClickListener(view -> {
-                order.remove(key);
-                order.add(index - 1, key);
-                renderList();
-            });
-            row.addView(up, new LinearLayout.LayoutParams(dp(46), dp(46)));
-        }
-
-        if (index < order.size() - 1) {
-            TextView down = arrowButton("↓", "下移" + labelOf(this, key));
-            down.setOnClickListener(view -> {
-                order.remove(key);
-                order.add(index + 1, key);
-                renderList();
-            });
-            row.addView(down, new LinearLayout.LayoutParams(dp(46), dp(46)));
-        }
-
         return row;
-    }
-
-    private TextView arrowButton(String arrow, String description) {
-        TextView button = text(arrow, 18, TEXT_PRIMARY, Typeface.BOLD);
-        button.setGravity(Gravity.CENTER);
-        button.setBackground(rounded(Color.WHITE, 8));
-        button.setClickable(true);
-        button.setFocusable(true);
-        button.setContentDescription(description);
-        return button;
     }
 
     private void save() {
