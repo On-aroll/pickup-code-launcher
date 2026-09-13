@@ -31,9 +31,9 @@
       "url": "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fmarket.m.taobao.com%2Fapp%2Fcn-yz%2Fmulti-activity%2FauthCode.html"
     },
     {
-      "name": "淘宝待取快递",
-      "short_name": "淘宝待取",
-      "url": "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1100333%2Flast-mile-fe%2Fm-end-school-tab%2Fhome"
+      "name": "淘宝订单",
+      "short_name": "淘宝订单",
+      "url": "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fh5.m.taobao.com%2Fmlapp%2Folist.html"
     },
     {
       "name": "拼多多身份码",

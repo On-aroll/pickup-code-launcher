@@ -230,8 +230,8 @@ public final class MainActivity extends Activity {
             case TAOBAO_PENDING:
                 root.addView(serviceRow(
                         destination,
-                        "淘宝待取快递",
-                        "打开淘宝末端驿站待取列表",
+                        "淘宝订单",
+                        "打开淘宝订单列表",
                         Color.rgb(255, 240, 227),
                         Color.rgb(194, 75, 18)
                 ));
@@ -284,7 +284,7 @@ public final class MainActivity extends Activity {
             case TAOBAO:
                 return "淘宝码";
             case TAOBAO_PENDING:
-                return "淘宝待取";
+                return "淘宝订单";
             case PINDUODUO:
                 return "拼多多码";
             case PINDUODUO_PENDING:

@@ -1,6 +1,7 @@
 package cn.pickup.launcher;
 
 import android.app.Activity;
+import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,6 +13,7 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.DragEvent;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.CheckBox;
@@ -42,6 +44,7 @@ public final class ShortcutSettingsActivity extends Activity {
     private final LinkedHashSet<String> selected = new LinkedHashSet<>();
     private final ArrayList<String> order = new ArrayList<>();
     private LinearLayout listContainer;
+    private String draggedKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,7 +72,7 @@ public final class ShortcutSettingsActivity extends Activity {
         root.addView(title);
 
         TextView description = text(
-                "勾选要显示的入口，用箭头调整顺序。\n顺序同时作用于 App 首页与长按菜单。\n长按菜单最多显示前 4 项。",
+                "勾选要显示的入口，长按拖动调整顺序。\n顺序同时作用于 App 首页与长按菜单。\n长按菜单最多显示前 4 项。",
                 14,
                 TEXT_SECONDARY,
                 Typeface.NORMAL
@@ -86,6 +89,7 @@ public final class ShortcutSettingsActivity extends Activity {
 
         listContainer = new LinearLayout(this);
         listContainer.setOrientation(LinearLayout.VERTICAL);
+        listContainer.setOnDragListener(this::onContainerDrag);
         root.addView(listContainer);
 
         renderList();
@@ -106,6 +110,61 @@ public final class ShortcutSettingsActivity extends Activity {
         root.addView(saveButton);
 
         setContentView(scrollView);
+    }
+
+    private boolean startDrag(String key, View view) {
+        draggedKey = key;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.N) {
+            view.startDragAndDrop(
+                    ClipData.newPlainText("entry", key),
+                    new View.DragShadowBuilder(view),
+                    null,
+                    0
+            );
+        } else {
+            view.startDrag(
+                    ClipData.newPlainText("entry", key),
+                    new View.DragShadowBuilder(view),
+                    null,
+                    0
+            );
+        }
+        return true;
+    }
+
+    private boolean onContainerDrag(View view, DragEvent event) {
+        switch (event.getAction()) {
+            case DragEvent.ACTION_DRAG_STARTED:
+                return true;
+            case DragEvent.ACTION_DRAG_LOCATION:
+            case DragEvent.ACTION_DROP:
+                if (draggedKey != null) {
+                    int from = order.indexOf(draggedKey);
+                    int to = indexAt(event.getY());
+                    if (from >= 0 && to >= 0 && from != to) {
+                        order.remove(from);
+                        order.add(to, draggedKey);
+                        renderList();
+                    }
+                }
+                return true;
+            case DragEvent.ACTION_DRAG_ENDED:
+                draggedKey = null;
+                return true;
+            default:
+                return true;
+        }
+    }
+
+    private int indexAt(float y) {
+        int count = listContainer.getChildCount();
+        for (int i = 0; i < count; i++) {
+            View child = listContainer.getChildAt(i);
+            if (y < child.getTop() + child.getHeight() / 2f) {
+                return i;
+            }
+        }
+        return count - 1;
     }
 
     private void renderList() {
@@ -134,6 +193,10 @@ public final class ShortcutSettingsActivity extends Activity {
             }
         });
         row.addView(box, new LinearLayout.LayoutParams(0, dp(50), 1f));
+
+        row.setLongClickable(true);
+        row.setContentDescription("长按拖动" + labelOf(this, key));
+        row.setOnLongClickListener(view -> startDrag(key, view));
 
         if (index > 0) {
             TextView up = arrowButton("↑", "上移" + labelOf(this, key));
