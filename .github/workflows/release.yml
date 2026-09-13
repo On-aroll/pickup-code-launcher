@@ -1,0 +1,75 @@
+name: 构建并发布
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: 安装 Android SDK
+        uses: android-actions/setup-android@v3
+        with:
+          packages: "platforms;android-35 build-tools;35.0.0 platform-tools"
+
+      - name: 构建 APK
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
+        run: |
+          if [ -n "$KEYSTORE_BASE64" ]; then
+            echo "$KEYSTORE_BASE64" | base64 -d > release.jks
+            cat > keystore.properties <<EOF
+            storeFile=release.jks
+            storePassword=$KEYSTORE_PASSWORD
+            keyAlias=$KEYSTORE_ALIAS
+            keyPassword=$KEYSTORE_PASSWORD
+            EOF
+            ./gradlew assembleRelease
+            cp app/build/outputs/apk/release/app-release.apk "快递取件-${{ github.ref_name }}.apk"
+          else
+            ./gradlew assembleDebug
+            cp app/build/outputs/apk/debug/app-debug.apk "快递取件-${{ github.ref_name }}.apk"
+          fi
+          ls -la 快递取件-*.apk
+
+      - name: 生成发布说明
+        run: |
+          APK=$(ls 快递取件-*.apk | head -n1)
+          SHA=$(sha256sum "$APK" | awk '{print $1}')
+          cat > release_body.md <<EOF
+          ## 下载说明
+
+          - 版本：${{ github.ref_name }}
+          - 适用系统：Android 6.0 及以上
+          - 应用包名：cn.pickup.launcher
+          - 安装文件：$APK
+          - SHA-256：\`$SHA\`
+
+          ## 本次更新
+
+          - 淘宝、拼多多待取件直达入口，一键跳转到待取列表
+          - 对应 App 未安装时自动尝试网页入口
+          - 详细说明见 README
+          EOF
+
+      - name: 发布 Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: 快递取件-*.apk
+          body_path: release_body.md

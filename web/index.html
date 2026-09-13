@@ -55,6 +55,13 @@
       line-height: 1.6;
     }
 
+    .section-title {
+      margin: 26px 0 10px;
+      color: #1b1d1b;
+      font-size: 17px;
+      font-weight: 700;
+    }
+
     .entries {
       display: grid;
       gap: 12px;
@@ -166,7 +173,7 @@
   <main>
     <p class="brand">取件直达</p>
     <h1>不用再翻三个 App</h1>
-    <p class="lead">点击对应入口，直接前往取件身份码。</p>
+    <p class="lead">点击对应入口，直达取件身份码或待取列表。</p>
 
     <section class="entries" aria-label="取件入口">
       <a class="entry cainiao" href="cainiao://desktop/station_code">
@@ -178,11 +185,20 @@
         <span class="arrow" aria-hidden="true">›</span>
       </a>
 
-      <a class="entry taobao" href="taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1100333%2Flast-mile-fe%2Fm-end-school-tab%2Fhome">
+      <a class="entry taobao" href="taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fmarket.m.taobao.com%2Fapp%2Fcn-yz%2Fmulti-activity%2FauthCode.html">
         <span class="mark" aria-hidden="true">淘</span>
         <span class="label">
           <strong>淘宝取件</strong>
           <span>打开淘宝身份码</span>
+        </span>
+        <span class="arrow" aria-hidden="true">›</span>
+      </a>
+
+      <a class="entry taobao" href="taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1100333%2Flast-mile-fe%2Fm-end-school-tab%2Fhome">
+        <span class="mark" aria-hidden="true">淘</span>
+        <span class="label">
+          <strong>淘宝待取快递</strong>
+          <span>打开淘宝待取列表</span>
         </span>
         <span class="arrow" aria-hidden="true">›</span>
       </a>
@@ -195,12 +211,25 @@
         </span>
         <span class="arrow" aria-hidden="true">›</span>
       </a>
+
+      <a class="entry pinduoduo" href="pinduoduo://com.xunmeng.pinduoduo/mdkd/package">
+        <span class="mark" aria-hidden="true">拼</span>
+        <span class="label">
+          <strong>拼多多待取快递</strong>
+          <span>打开拼多多待取列表</span>
+        </span>
+        <span class="arrow" aria-hidden="true">›</span>
+      </a>
     </section>
 
+    <p class="section-title">网页备用入口</p>
     <nav class="fallbacks" aria-label="网页备用入口">
       <a href="https://market.m.taobao.com/app/cn-yz/multi-activity/authCode.html?bizEntry=ALIPAY_GUOGUO">菜鸟网页 ↗</a>
-      <a href="https://pages-fast.m.taobao.com/wow/z/uniapp/1100333/last-mile-fe/m-end-school-tab/home">淘宝网页 ↗</a>
-      <a href="https://m.pinduoduo.net/mdkd/package?entry_source=18&amp;extra_params=from_wx_jump%3D1&amp;p_channel=0">拼多多网页 ↗</a>
+      <a href="https://market.m.taobao.com/app/cn-yz/multi-activity/authCode.html">淘宝身份码网页 ↗</a>
+      <a href="https://pages-fast.m.taobao.com/wow/z/uniapp/1100333/last-mile-fe/m-end-school-tab/home">淘宝待取网页 ↗</a>
+      <a href="https://m.pinduoduo.net/mdkd/package?entry_source=18&amp;extra_params=from_wx_jump%3D1&amp;p_channel=0">拼多多身份码网页 ↗</a>
+      <a href="https://m.pinduoduo.net/mdkd/package?entry_source=18&amp;extra_params=from_wx_jump%3D1&amp;p_channel=0">拼多多待取网页 ↗</a>
+      <a href="https://order.jd.com/center/list.action">京东订单网页 ↗</a>
     </nav>
 
     <footer>第三方应用更新后，内部页面地址可能发生变化。</footer>
@@ -213,4 +242,3 @@
   </script>
 </body>
 </html>
-

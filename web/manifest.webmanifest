@@ -1,7 +1,7 @@
 {
   "name": "取件直达",
   "short_name": "取件直达",
-  "description": "菜鸟、淘宝和拼多多身份码快捷入口",
+  "description": "菜鸟、淘宝、拼多多、京东和小红书取件码与待取列表快捷入口",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f7f8f4",
@@ -23,12 +23,32 @@
     {
       "name": "淘宝身份码",
       "short_name": "淘宝",
+      "url": "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fmarket.m.taobao.com%2Fapp%2Fcn-yz%2Fmulti-activity%2FauthCode.html"
+    },
+    {
+      "name": "淘宝待取快递",
+      "short_name": "淘宝待取",
       "url": "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fpages-fast.m.taobao.com%2Fwow%2Fz%2Funiapp%2F1100333%2Flast-mile-fe%2Fm-end-school-tab%2Fhome"
     },
     {
       "name": "拼多多身份码",
       "short_name": "拼多多",
       "url": "pinduoduo://com.xunmeng.pinduoduo/mdkd/package?tab=ID_CODE&entry_source=11"
+    },
+    {
+      "name": "拼多多待取快递",
+      "short_name": "拼多多待取",
+      "url": "pinduoduo://com.xunmeng.pinduoduo/mdkd/package"
+    },
+    {
+      "name": "京东待取快递",
+      "short_name": "京东",
+      "url": "openjd://virtual?params=%7B%22category%22%3A%22jump%22%2C%22des%22%3A%22orderlist%22%7D"
+    },
+    {
+      "name": "小红书待取快递",
+      "short_name": "小红书",
+      "url": "xhsdiscover://rn/lancer-order/order/list"
     }
   ]
 }
