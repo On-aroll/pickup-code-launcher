@@ -1,7 +1,7 @@
 {
   "name": "取件直达",
   "short_name": "取件直达",
-  "description": "淘宝、拼多多、京东和小红书取件码与待取列表快捷入口",
+  "description": "菜鸟、淘宝、拼多多、京东和小红书取件码与待取列表快捷入口",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f7f8f4",
@@ -15,6 +15,16 @@
     }
   ],
   "shortcuts": [
+    {
+      "name": "菜鸟身份码",
+      "short_name": "菜鸟",
+      "url": "cainiao://desktop/station_code"
+    },
+    {
+      "name": "菜鸟包裹",
+      "short_name": "菜鸟",
+      "url": "cainiao://"
+    },
     {
       "name": "淘宝身份码",
       "short_name": "淘宝",

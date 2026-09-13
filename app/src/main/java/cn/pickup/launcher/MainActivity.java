@@ -30,6 +30,8 @@ public final class MainActivity extends Activity {
             return;
         }
 
+        ShortcutSettingsActivity.applyDynamic(this);
+
         getWindow().setStatusBarColor(PAGE_BACKGROUND);
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR);
         setContentView(buildContent());
@@ -39,6 +41,12 @@ public final class MainActivity extends Activity {
         String action = getIntent().getAction();
         if (ACTION_OPEN.equals(action)) {
             return Destination.fromKey(getIntent().getStringExtra(EXTRA_DESTINATION));
+        }
+        if ("cn.pickup.launcher.OPEN_CAINIAO".equals(action)) {
+            return Destination.CAINIAO;
+        }
+        if ("cn.pickup.launcher.OPEN_CAINIAO_PACKAGES".equals(action)) {
+            return Destination.CAINIAO_PACKAGES;
         }
         if ("cn.pickup.launcher.OPEN_TAOBAO".equals(action)) {
             return Destination.TAOBAO;
@@ -92,6 +100,13 @@ public final class MainActivity extends Activity {
         root.addView(description);
 
         root.addView(serviceRow(
+                Destination.CAINIAO,
+                "菜鸟取件",
+                "打开菜鸟身份码，失败时进入菜鸟 App",
+                Color.rgb(231, 244, 235),
+                Color.rgb(20, 120, 72)
+        ));
+        root.addView(serviceRow(
                 Destination.TAOBAO,
                 "淘宝取件",
                 "打开淘宝末端取件身份码",
@@ -122,6 +137,13 @@ public final class MainActivity extends Activity {
         pendingDescription.setLayoutParams(pendingDescriptionParams);
         root.addView(pendingDescription);
 
+        root.addView(serviceRow(
+                Destination.CAINIAO_PACKAGES,
+                "菜鸟包裹",
+                "打开菜鸟包裹列表",
+                Color.rgb(231, 244, 235),
+                Color.rgb(20, 120, 72)
+        ));
         root.addView(serviceRow(
                 Destination.TAOBAO_PENDING,
                 "淘宝待取快递",
@@ -170,21 +192,53 @@ public final class MainActivity extends Activity {
 
         LinearLayout shortcutButtons = new LinearLayout(this);
         shortcutButtons.setOrientation(LinearLayout.HORIZONTAL);
-        shortcutButtons.setWeightSum(2f);
+        shortcutButtons.setWeightSum(3f);
+        addPinButton(shortcutButtons, Destination.CAINIAO, "菜鸟码");
         addPinButton(shortcutButtons, Destination.TAOBAO, "淘宝码");
         addPinButton(shortcutButtons, Destination.PINDUODUO, "拼多多码");
         root.addView(shortcutButtons);
 
         LinearLayout pendingShortcutButtons = new LinearLayout(this);
         pendingShortcutButtons.setOrientation(LinearLayout.HORIZONTAL);
-        pendingShortcutButtons.setWeightSum(4f);
+        pendingShortcutButtons.setWeightSum(5f);
         LinearLayout.LayoutParams pendingShortcutParams = verticalParams(dp(8));
         pendingShortcutButtons.setLayoutParams(pendingShortcutParams);
+        addPinButton(pendingShortcutButtons, Destination.CAINIAO_PACKAGES, "菜鸟包裹");
         addPinButton(pendingShortcutButtons, Destination.TAOBAO_PENDING, "淘宝待取");
         addPinButton(pendingShortcutButtons, Destination.PINDUODUO_PENDING, "拼多多待取");
         addPinButton(pendingShortcutButtons, Destination.JD, "京东待取");
         addPinButton(pendingShortcutButtons, Destination.XHS, "小红书待取");
         root.addView(pendingShortcutButtons);
+
+        TextView customTitle = text("长按菜单自定义", 17, TEXT_PRIMARY, Typeface.BOLD);
+        LinearLayout.LayoutParams customTitleParams = verticalParams(dp(18));
+        customTitleParams.bottomMargin = dp(10);
+        customTitle.setLayoutParams(customTitleParams);
+        root.addView(customTitle);
+
+        TextView customDescription = text(
+                "选择长按桌面图标时显示的快捷入口。",
+                14,
+                TEXT_SECONDARY,
+                Typeface.NORMAL
+        );
+        LinearLayout.LayoutParams customDescriptionParams = verticalParams(0);
+        customDescriptionParams.bottomMargin = dp(12);
+        customDescription.setLayoutParams(customDescriptionParams);
+        root.addView(customDescription);
+
+        TextView customButton = text("自定义长按菜单", 14, TEXT_PRIMARY, Typeface.BOLD);
+        customButton.setGravity(Gravity.CENTER);
+        customButton.setBackground(rounded(Color.WHITE, 8));
+        customButton.setClickable(true);
+        customButton.setFocusable(true);
+        customButton.setContentDescription("自定义桌面长按菜单");
+        customButton.setOnClickListener(view ->
+                startActivity(new android.content.Intent(this, ShortcutSettingsActivity.class)));
+        root.addView(customButton, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                dp(48)
+        ));
 
         return scrollView;
     }

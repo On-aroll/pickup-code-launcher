@@ -20,6 +20,10 @@ public final class PickupWidgetProvider extends AppWidgetProvider {
                     R.layout.pickup_widget
             );
             views.setOnClickPendingIntent(
+                    R.id.widget_cainiao,
+                    pendingIntent(context, Destination.CAINIAO, 101)
+            );
+            views.setOnClickPendingIntent(
                     R.id.widget_taobao,
                     pendingIntent(context, Destination.TAOBAO, 102)
             );

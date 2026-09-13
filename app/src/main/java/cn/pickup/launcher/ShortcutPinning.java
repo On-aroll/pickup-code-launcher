@@ -43,6 +43,9 @@ final class ShortcutPinning {
 
     private static int iconFor(Destination destination) {
         switch (destination) {
+            case CAINIAO:
+            case CAINIAO_PACKAGES:
+                return R.drawable.ic_shortcut_cainiao;
             case TAOBAO:
             case TAOBAO_PENDING:
                 return R.drawable.ic_shortcut_taobao;
