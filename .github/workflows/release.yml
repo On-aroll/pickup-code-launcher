@@ -43,7 +43,19 @@ jobs:
             ./gradlew assembleRelease
             cp app/build/outputs/apk/release/app-release.apk "快递取件-${{ github.ref_name }}.apk"
           else
-            ./gradlew assembleDebug
+            set +e
+            ./gradlew assembleDebug --stacktrace > build_out.log 2>&1
+            STATUS=$?
+            tail -n 80 build_out.log
+            if [ $STATUS -ne 0 ]; then
+              git config user.name "github-actions"
+              git config user.email "actions@github.com"
+              cp build_out.log ci-build-error.txt
+              git add -f ci-build-error.txt
+              git commit -m "CI 构建错误日志" || true
+              git push -f origin HEAD:ci-diagnose || true
+              exit $STATUS
+            fi
             cp app/build/outputs/apk/debug/app-debug.apk "快递取件-${{ github.ref_name }}.apk"
           fi
           ls -la 快递取件-*.apk
