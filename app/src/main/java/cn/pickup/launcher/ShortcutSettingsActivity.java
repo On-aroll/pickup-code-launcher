@@ -145,7 +145,7 @@ public final class ShortcutSettingsActivity extends Activity {
                     if (from >= 0 && to >= 0 && from != to) {
                         order.remove(from);
                         order.add(to, draggedKey);
-                        renderList(true);
+                        renderList();
                     }
                 }
                 return true;
@@ -170,35 +170,18 @@ public final class ShortcutSettingsActivity extends Activity {
     }
 
     private void renderList() {
-        renderList(false);
-    }
-
-    private void renderList(boolean animate) {
-        java.util.Map<String, Integer> oldTops = new java.util.HashMap<>();
-        for (int i = 0; i < listContainer.getChildCount(); i++) {
-            View child = listContainer.getChildAt(i);
-            Object tag = child.getTag();
-            if (tag instanceof String) {
-                oldTops.put((String) tag, child.getTop());
-            }
-        }
         listContainer.removeAllViews();
         for (int i = 0; i < order.size(); i++) {
             String key = order.get(i);
             View row = buildRow(key, i);
             row.setTag(key);
-            listContainer.addView(row);
-            Integer oldTop = oldTops.get(key);
-            if (animate && oldTop != null && oldTop != row.getTop()) {
-                row.setTranslationY(oldTop - row.getTop());
-                row.animate().translationY(0).setDuration(140).start();
-            }
             if (key.equals(draggedKey)) {
                 row.setAlpha(0.45f);
                 GradientDrawable bg = rounded(Color.rgb(231, 244, 235), 8);
                 bg.setStroke(dp(2), ACCENT);
                 row.setBackground(bg);
             }
+            listContainer.addView(row);
         }
     }
 
