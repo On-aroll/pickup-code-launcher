@@ -92,6 +92,15 @@ public final class MainActivity extends Activity {
         author.setLayoutParams(authorParams);
         root.addView(author);
 
+        String versionName = "";
+        try {
+            versionName = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (Exception ignored) {}
+        TextView versionView = text("版本 " + versionName, 12, TEXT_SECONDARY, Typeface.NORMAL);
+        LinearLayout.LayoutParams versionParams = verticalParams(dp(3));
+        versionView.setLayoutParams(versionParams);
+        root.addView(versionView);
+
         TextView description = text("快速打开取件码，也能查看各平台的待取快递。", 15, TEXT_SECONDARY, Typeface.NORMAL);
         description.setLineSpacing(0, 1.25f);
         LinearLayout.LayoutParams descriptionParams = verticalParams(dp(14));
