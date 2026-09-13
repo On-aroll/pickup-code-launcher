@@ -18,8 +18,8 @@ android {
         applicationId = "cn.pickup.launcher"
         minSdk = 23
         targetSdk = 35
-        versionCode = 8
-        versionName = "2.1.1"
+        versionCode = 9
+        versionName = "2.1.2"
     }
 
     if (signingPropertiesFile.exists()) {
@@ -51,4 +51,5 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 }
+
 

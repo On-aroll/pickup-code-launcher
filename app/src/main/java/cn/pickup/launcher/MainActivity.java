@@ -131,8 +131,8 @@ public final class MainActivity extends Activity {
         ));
         root.addView(serviceRow(
                 Destination.PINDUODUO_PENDING,
-                "拼多多待取快递",
-                "打开拼多多包裹待取列表",
+                "拼多多订单",
+                "打开拼多多订单与取件状态",
                 Color.rgb(255, 232, 236),
                 Color.rgb(190, 35, 60)
         ));
@@ -181,7 +181,7 @@ public final class MainActivity extends Activity {
         LinearLayout.LayoutParams pendingShortcutParams = verticalParams(dp(8));
         pendingShortcutButtons.setLayoutParams(pendingShortcutParams);
         addPinButton(pendingShortcutButtons, Destination.TAOBAO_PENDING, "淘宝待取");
-        addPinButton(pendingShortcutButtons, Destination.PINDUODUO_PENDING, "拼多多待取");
+        addPinButton(pendingShortcutButtons, Destination.PINDUODUO_PENDING, "拼多多订单");
         addPinButton(pendingShortcutButtons, Destination.JD, "京东待取");
         addPinButton(pendingShortcutButtons, Destination.XHS, "小红书待取");
         root.addView(pendingShortcutButtons);

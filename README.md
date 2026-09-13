@@ -15,7 +15,7 @@ https://github.com/On-aroll/pickup-code-launcher/releases/latest
 ## 已实现
 
 - 快速打开淘宝和拼多多取件码
-- 一键跳转到淘宝、拼多多待取件列表
+- 一键跳转到淘宝待取件列表、拼多多订单页
 - 查看京东、小红书待取快递
 - 对应 App 无法打开时自动尝试网页入口
 - 支持应用长按快捷操作
@@ -33,6 +33,7 @@ https://github.com/On-aroll/pickup-code-launcher/releases/latest
 - iOS 快捷指令文档补充待取件配置
 - 接入 GitHub Actions，推送版本标签后自动构建并发布 APK
 - 移除菜鸟入口，精简为淘宝、拼多多、京东、小红书
+- 拼多多入口改为直达「我的订单」页，取件与收货状态一目了然
 
 ## Android 构建
 
@@ -86,6 +87,6 @@ keytool -genkeypair -v -keystore release-keystore.jks -keyalg RSA -keysize 2048 
 
 本项目使用 MIT License。
 
-当前版本：2.1.1
+当前版本：2.1.2
 
 最后核对日期：2026-09-13。

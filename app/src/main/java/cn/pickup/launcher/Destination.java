@@ -39,13 +39,14 @@ enum Destination {
     ),
     PINDUODUO_PENDING(
             "pinduoduo_pending",
-            "拼多多待取快递",
+            "拼多多订单",
             "拼",
             "com.xunmeng.pinduoduo",
             new String[] {
-                    "pinduoduo://com.xunmeng.pinduoduo/mdkd/package"
+                    "pinduoduo://com.xunmeng.pinduoduo/index.html?index=4&pr_tab_link=personal.html",
+                    "pinduoduo://com.xunmeng.pinduoduo/order_list.html"
             },
-            "https://m.pinduoduo.net/mdkd/package?entry_source=18&extra_params=from_wx_jump%3D1&p_channel=0"
+            "https://mobile.yangkeduo.com/orders.html"
     ),
     JD(
             "jd",
