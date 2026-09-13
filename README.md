@@ -36,6 +36,7 @@ https://github.com/On-aroll/pickup-code-launcher/releases/latest
 - 拼多多入口改为直达「我的订单」页，取件与收货状态一目了然
 - 恢复菜鸟身份码与包裹入口
 - 长按桌面图标快捷入口支持用户自定义
+- App 首页与长按菜单入口顺序可调整，长按菜单支持勾选显示项
 - 拼多多入口优先定位待收货列表（含待取件入口），并保留订单列表与个人中心兜底
 
 ## Android 构建
@@ -90,6 +91,6 @@ keytool -genkeypair -v -keystore release-keystore.jks -keyalg RSA -keysize 2048 
 
 本项目使用 MIT License。
 
-当前版本：2.2.0
+当前版本：2.3.0
 
 最后核对日期：2026-09-13。
