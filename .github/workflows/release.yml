@@ -47,11 +47,9 @@ jobs:
             set +e
             OUT=$(./gradlew assembleDebug --stacktrace 2>&1)
             STATUS=$?
-            printf "%s
-" "$OUT" | tail -n 60
+            printf "%s\n" "$OUT" | tail -n 60
             if [ $STATUS -ne 0 ]; then
-              printf "%s
-" "$OUT" | tail -n 120 > build_err.txt
+              printf "%s\n" "$OUT" | tail -n 120 > build_err.txt
               gh issue create --title "CI 构建失败诊断 #${{ github.run_id }}" --body "$(cat build_err.txt)" || true
               exit $STATUS
             fi
