@@ -46,7 +46,7 @@ jobs:
 
       - name: 生成发布说明
         run: |
-          APK=$(ls 快递取件-*.apk | head -n1)
+          APK=$(ls pickup-code-launcher-*.apk | head -n1)
           SHA=$(sha256sum "$APK" | awk '{print $1}')
           printf '%s\n' \
             "## 下载说明" \
