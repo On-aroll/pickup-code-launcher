@@ -41,10 +41,11 @@ enum Destination {
             "淘",
             "com.taobao.taobao",
             new String[] {
+                    "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fh5.m.taobao.com%2Fmlapp%2Folist.html%3FtabCode%3DwaitConfirm",
                     "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fh5.m.taobao.com%2Fmlapp%2Folist.html",
                     "tbopen://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fh5.m.taobao.com%2Fmlapp%2Folist.html"
             },
-            "https://h5.m.taobao.com/mlapp/olist.html"
+            "https://h5.m.taobao.com/mlapp/olist.html?tabCode=waitConfirm"
     ),
     PINDUODUO(
             "pinduoduo",

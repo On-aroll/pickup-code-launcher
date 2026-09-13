@@ -38,7 +38,7 @@ https://github.com/On-aroll/pickup-code-launcher/releases/latest
 - 长按桌面图标快捷入口支持用户自定义
 - App 首页与长按菜单入口顺序可调整，长按菜单支持勾选显示项
 - 拼多多入口优先定位待收货列表（含待取件入口），并保留订单列表与个人中心兜底
-- 淘宝待取入口改为「我的订单」列表页
+- 淘宝待取入口改为「我的订单」列表页，并优先定位「待收货」分页
 - 入口顺序支持长按拖动调整，箭头按钮保留作微调
 
 ## Android 构建
@@ -93,6 +93,6 @@ keytool -genkeypair -v -keystore release-keystore.jks -keyalg RSA -keysize 2048 
 
 本项目使用 MIT License。
 
-当前版本：2.4.0
+当前版本：2.4.1
 
 最后核对日期：2026-09-13。

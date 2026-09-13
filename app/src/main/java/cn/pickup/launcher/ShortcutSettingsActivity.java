@@ -72,7 +72,7 @@ public final class ShortcutSettingsActivity extends Activity {
         root.addView(title);
 
         TextView description = text(
-                "勾选要显示的入口，长按拖动调整顺序。\n顺序同时作用于 App 首页与长按菜单。\n长按菜单最多显示前 4 项。",
+                "勾选要显示的入口，长按右侧 ≡ 手柄或文字拖动排序。\n顺序同时作用于 App 首页与长按菜单。\n长按菜单最多显示前 4 项。",
                 14,
                 TEXT_SECONDARY,
                 Typeface.NORMAL
@@ -192,11 +192,18 @@ public final class ShortcutSettingsActivity extends Activity {
                 selected.remove(key);
             }
         });
+        box.setLongClickable(true);
+        box.setOnLongClickListener(view -> startDrag(key, view));
         row.addView(box, new LinearLayout.LayoutParams(0, dp(50), 1f));
 
-        row.setLongClickable(true);
-        row.setContentDescription("长按拖动" + labelOf(this, key));
-        row.setOnLongClickListener(view -> startDrag(key, view));
+        TextView handle = text("≡", 20, TEXT_SECONDARY, Typeface.BOLD);
+        handle.setGravity(Gravity.CENTER);
+        handle.setLongClickable(true);
+        handle.setClickable(false);
+        handle.setFocusable(false);
+        handle.setContentDescription("长按拖动" + labelOf(this, key));
+        handle.setOnLongClickListener(view -> startDrag(key, handle));
+        row.addView(handle, new LinearLayout.LayoutParams(dp(40), dp(50)));
 
         if (index > 0) {
             TextView up = arrowButton("↑", "上移" + labelOf(this, key));

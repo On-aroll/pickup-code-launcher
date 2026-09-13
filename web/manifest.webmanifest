@@ -33,7 +33,7 @@
     {
       "name": "淘宝订单",
       "short_name": "淘宝订单",
-      "url": "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fh5.m.taobao.com%2Fmlapp%2Folist.html"
+      "url": "taobao://m.taobao.com/tbopen/index.html?h5Url=https%3A%2F%2Fh5.m.taobao.com%2Fmlapp%2Folist.html%3FtabCode%3DwaitConfirm"
     },
     {
       "name": "拼多多身份码",
