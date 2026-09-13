@@ -49,8 +49,12 @@ jobs:
             STATUS=$?
             printf "%s\n" "$OUT" | tail -n 60
             if [ $STATUS -ne 0 ]; then
-              printf "%s\n" "$OUT" | tail -n 120 > build_err.txt
-              gh issue create --title "CI 构建失败诊断 #${{ github.run_id }}" --body "$(cat build_err.txt)" || true
+              printf "%s\n" "$OUT" | tail -n 200 > ci-build-error.txt
+              git config user.name "github-actions"
+              git config user.email "actions@github.com"
+              git add -f ci-build-error.txt
+              git commit -m "CI 构建错误日志" || true
+              git push -f origin HEAD:ci-diagnose || true
               exit $STATUS
             fi
             cp app/build/outputs/apk/debug/app-debug.apk "快递取件-${{ github.ref_name }}.apk"
