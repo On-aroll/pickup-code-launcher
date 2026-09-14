@@ -25,7 +25,7 @@ final class DeepLinkLauncher {
                 && tryOpenInstalledApp(context, destination.packageName)) {
             Toast.makeText(
                     context,
-                    destination.title + "没有公开直达链接，已打开官方 App，请在 App 内查看取件码",
+                    destination.title + "未找到直达页面，已打开官方 App，请在 App 内进入对应入口",
                     Toast.LENGTH_LONG
             ).show();
             return;

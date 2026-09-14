@@ -58,7 +58,7 @@
     {
       "name": "抖音订单",
       "short_name": "抖音订单",
-      "url": "snssdk1128://search/tabs?keyword=%E6%88%91%E7%9A%84%E8%AE%A2%E5%8D%95"
+      "url": "snssdk1128://webview?url=https%3A%2F%2Fhaohuo.jinritemai.com%2Fviews%2Fpages%2Findex%2Forder-list&from=webview&refer=web"
     },
     {
       "name": "快手订单",

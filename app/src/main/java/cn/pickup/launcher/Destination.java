@@ -97,10 +97,12 @@ enum Destination {
             "抖",
             "com.ss.android.ugc.aweme",
             new String[] {
-                    "snssdk1128://search/tabs?keyword=%E6%88%91%E7%9A%84%E8%AE%A2%E5%8D%95",
+                    "snssdk1128://webview?url=https%3A%2F%2Fhaohuo.jinritemai.com%2Fviews%2Fpages%2Findex%2Forder-list&from=webview&refer=web",
+                    "snssdk1128://feed?refer=web",
                     "snssdk1128://"
             },
-            "https://haohuo.jinritemai.com/views/pages/index/order-list"
+            "https://haohuo.jinritemai.com/views/pages/index/order-list",
+            true
     ),
     KUAISHOU_PENDING(
             "kuaishou_pending",
@@ -111,7 +113,8 @@ enum Destination {
                     "kwai://merchanthome",
                     "kwai://"
             },
-            "https://www.kwaixiaodian.com/"
+            "https://www.kwaixiaodian.com/",
+            true
     );
 
     final String key;

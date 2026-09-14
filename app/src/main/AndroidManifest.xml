@@ -7,6 +7,8 @@
         <package android:name="com.xunmeng.pinduoduo" />
         <package android:name="com.jingdong.app.mall" />
         <package android:name="com.xingin.xhs" />
+        <package android:name="com.ss.android.ugc.aweme" />
+        <package android:name="com.smile.gifmaker" />
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="cainiao" />
@@ -30,6 +32,14 @@
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="xhsdiscover" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="snssdk1128" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="kwai" />
         </intent>
     </queries>
 
