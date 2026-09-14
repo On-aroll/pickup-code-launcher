@@ -27,10 +27,14 @@ https://github.com/On-aroll/pickup-code-launcher/releases/latest
 
 ## 更新记录
 
+### v2.5.7（2026-09-14）
+
+- 修复抖音入口唤起顺序：优先唤起抖音商城 App（主抖音的搜索路由不再抢占）
+- 网页版与 iOS 文档同步调整抖音入口
+
 ### v2.5.6（2026-09-14）
 
 - 新增哔哩哔哩订单入口，直达会员购「我的」页（含待收货）
-- 抖音订单入口优先尝试 App 内打开「我的订单」搜索页，并给出明确引导提示
 - 网页版补齐哔哩哔哩入口，修正抖音网页兜底链接
 
 ### v2.1.0（2026-09-13）
@@ -103,6 +107,6 @@ keytool -genkeypair -v -keystore release-keystore.jks -keyalg RSA -keysize 2048 
 
 本项目使用 MIT License。
 
-当前版本：2.5.6
+当前版本：2.5.7
 
 最后核对日期：2026-09-14。

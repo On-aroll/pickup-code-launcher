@@ -97,7 +97,6 @@ enum Destination {
             "抖",
             "com.ss.android.ugc.aweme",
             new String[] {
-                    "snssdk1128://search/tabs?keyword=%E6%88%91%E7%9A%84%E8%AE%A2%E5%8D%95",
                     "snssdk1128://",
                     "snssdk1128://feed?refer=web"
             },
