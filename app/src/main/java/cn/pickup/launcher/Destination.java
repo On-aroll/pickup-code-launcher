@@ -97,6 +97,7 @@ enum Destination {
             "抖",
             "com.ss.android.ugc.aweme",
             new String[] {
+                    "snssdk1128://webview?url=https%3A%2F%2Fwww.douyin.com%2Fmall&from=webview&refer=web",
                     "snssdk1128://",
                     "snssdk1128://feed?refer=web"
             },

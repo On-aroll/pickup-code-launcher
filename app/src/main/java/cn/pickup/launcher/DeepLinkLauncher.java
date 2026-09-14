@@ -25,7 +25,7 @@ final class DeepLinkLauncher {
             if (tryOpenInstalledApp(context, destination)) {
                 String hint;
                 if (destination == Destination.DOUYIN_PENDING) {
-                    hint = "已打开抖音商城，请点左上角「我的订单」查看待收货";
+                    hint = "已打开抖音商城，点「我的订单」查看待收货";
                 } else if (destination == Destination.KUAISHOU_PENDING) {
                     hint = "已打开快手小店，请点「我的订单」查看";
                 } else {
