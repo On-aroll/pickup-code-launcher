@@ -1,7 +1,7 @@
 {
   "name": "取件直达",
   "short_name": "取件直达",
-  "description": "菜鸟、淘宝、拼多多、京东和小红书取件码与待取列表快捷入口",
+  "description": "菜鸟、淘宝、拼多多、京东、小红书、抖音和快手取件码与待取列表快捷入口",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#f7f8f4",
@@ -54,6 +54,16 @@
       "name": "小红书待取快递",
       "short_name": "小红书",
       "url": "xhsdiscover://rn/lancer-order/order/list"
+    },
+    {
+      "name": "抖音订单",
+      "short_name": "抖音订单",
+      "url": "snssdk1128://search/tabs?keyword=%E6%88%91%E7%9A%84%E8%AE%A2%E5%8D%95"
+    },
+    {
+      "name": "快手订单",
+      "short_name": "快手订单",
+      "url": "kwai://merchanthome"
     }
   ]
 }

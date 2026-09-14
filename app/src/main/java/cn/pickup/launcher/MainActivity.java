@@ -66,6 +66,12 @@ public final class MainActivity extends Activity {
         if ("cn.pickup.launcher.OPEN_XHS".equals(action)) {
             return Destination.XHS;
         }
+        if ("cn.pickup.launcher.OPEN_DOUYIN_PENDING".equals(action)) {
+            return Destination.DOUYIN_PENDING;
+        }
+        if ("cn.pickup.launcher.OPEN_KUAISHOU_PENDING".equals(action)) {
+            return Destination.KUAISHOU_PENDING;
+        }
         return null;
     }
 
@@ -281,6 +287,24 @@ public final class MainActivity extends Activity {
                         Color.rgb(204, 63, 103)
                 ));
                 break;
+            case DOUYIN_PENDING:
+                root.addView(serviceRow(
+                        destination,
+                        "抖音订单",
+                        "打开抖音商城订单列表",
+                        Color.rgb(240, 240, 242),
+                        Color.rgb(22, 24, 35)
+                ));
+                break;
+            case KUAISHOU_PENDING:
+                root.addView(serviceRow(
+                        destination,
+                        "快手订单",
+                        "打开快手小店订单列表",
+                        Color.rgb(255, 237, 233),
+                        Color.rgb(255, 73, 6)
+                ));
+                break;
         }
     }
 
@@ -302,6 +326,10 @@ public final class MainActivity extends Activity {
                 return "京东待取";
             case XHS:
                 return "小红书待取";
+            case DOUYIN_PENDING:
+                return "抖音订单";
+            case KUAISHOU_PENDING:
+                return "快手订单";
         }
         return destination.title;
     }

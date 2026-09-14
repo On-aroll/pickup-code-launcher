@@ -90,6 +90,28 @@ enum Destination {
                     "xhsdiscover://rn/lancer-order/order/list"
             },
             "https://www.xiaohongshu.com/"
+    ),
+    DOUYIN_PENDING(
+            "douyin_pending",
+            "抖音订单",
+            "抖",
+            "com.ss.android.ugc.aweme",
+            new String[] {
+                    "snssdk1128://search/tabs?keyword=%E6%88%91%E7%9A%84%E8%AE%A2%E5%8D%95",
+                    "snssdk1128://"
+            },
+            "https://haohuo.jinritemai.com/views/pages/index/order-list"
+    ),
+    KUAISHOU_PENDING(
+            "kuaishou_pending",
+            "快手订单",
+            "快",
+            "com.smile.gifmaker",
+            new String[] {
+                    "kwai://merchanthome",
+                    "kwai://"
+            },
+            "https://www.kwaixiaodian.com/"
     );
 
     final String key;
