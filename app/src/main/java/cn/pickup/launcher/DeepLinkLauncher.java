@@ -12,15 +12,33 @@ import android.widget.Toast;
 final class DeepLinkLauncher {
     private static final String TAG = "PickupDeepLink";
 
+    /**
+     * Deep links tried against the Douyin Mall app only. The mall app shares the
+     * snssdk1128:// scheme family with the main Douyin app; scoping the intent to
+     * the mall package keeps the main app from hijacking the route.
+     */
+    private static final String[] DOUYIN_MALL_URIS = {
+            "snssdk1128://profile",
+            "snssdk1128://mall"
+    };
+
     private DeepLinkLauncher() {
     }
 
     static void open(Context context, Destination destination) {
         // The Douyin Mall app (com.ss.android.ugc.livelite) does not register the
         // bare snssdk1128:// scheme, so the main Douyin app would always win the
-        // deep-link race and open the feed instead. Launch the mall app directly.
+        // deep-link race and open the feed instead. Try mall-only deep links
+        // (profile opens the account page that contains the order entry), then
+        // launch the mall app directly.
         if (destination == Destination.DOUYIN_PENDING
                 && isPackageInstalled(context, "com.ss.android.ugc.livelite")) {
+            for (String mallUri : DOUYIN_MALL_URIS) {
+                if (tryOpenScopedToPackage(context, mallUri, "com.ss.android.ugc.livelite")) {
+                    Toast.makeText(context, "已打开抖音商城「我的」，点「我的订单」查看待收货", Toast.LENGTH_LONG).show();
+                    return;
+                }
+            }
             if (tryOpenInstalledApp(context, destination)) {
                 Toast.makeText(context, "已打开抖音商城，点「我的订单」查看待收货", Toast.LENGTH_LONG).show();
                 return;
@@ -63,6 +81,16 @@ final class DeepLinkLauncher {
         if (!tryOpen(context, destination.webUri, null)) {
             Toast.makeText(context, "暂时无法打开" + destination.title, Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private static boolean tryOpenScopedToPackage(Context context, String uri, String packageName) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        intent.setPackage(packageName);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+        if (!(context instanceof android.app.Activity)) {
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        }
+        return resolveAndStart(context, intent, uri, packageName);
     }
 
     private static boolean isPackageInstalled(Context context, String packageName) {
