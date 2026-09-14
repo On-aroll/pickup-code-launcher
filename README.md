@@ -27,6 +27,11 @@ https://github.com/On-aroll/pickup-code-launcher/releases/latest
 
 ## 更新记录
 
+### v2.5.8（2026-09-14）
+
+- 快手入口改为优先打开「快手小店」/「我的钱包」，不再停留在刷视频首页
+- 快手极速版优先唤起（nebula 优先于主 App）
+
 ### v2.5.7（2026-09-14）
 
 - 修复抖音入口唤起顺序：优先唤起抖音商城 App（主抖音的搜索路由不再抢占）
@@ -107,6 +112,6 @@ keytool -genkeypair -v -keystore release-keystore.jks -keyalg RSA -keysize 2048 
 
 本项目使用 MIT License。
 
-当前版本：2.5.7
+当前版本：2.5.8
 
 最后核对日期：2026-09-14。

@@ -109,9 +109,11 @@ enum Destination {
             "快",
             "com.smile.gifmaker",
             new String[] {
+                    "ksnebula://merchanthome",
+                    "ksnebula://mywallet",
                     "ksnebula://",
                     "kwai://merchanthome",
-                    "kwai://home",
+                    "kwai://mywallet",
                     "kwai://"
             },
             "https://www.kwaixiaodian.com/",
@@ -171,7 +173,7 @@ enum Destination {
             case DOUYIN_PENDING:
                 return new String[] {"com.ss.android.ugc.livelite", "com.ss.android.ugc.aweme", "com.ss.android.ugc.aweme.lite"};
             case KUAISHOU_PENDING:
-                return new String[] {"com.smile.gifmaker", "com.kuaishou.nebula"};
+                return new String[] {"com.kuaishou.nebula", "com.smile.gifmaker"};
             default:
                 return new String[] {packageName};
         }
