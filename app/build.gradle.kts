@@ -18,8 +18,8 @@ android {
         applicationId = "cn.pickup.launcher"
         minSdk = 23
         targetSdk = 35
-        versionCode = 22
-        versionName = "2.5.4"
+        versionCode = 23
+        versionName = "2.5.5"
     }
 
     if (signingPropertiesFile.exists()) {

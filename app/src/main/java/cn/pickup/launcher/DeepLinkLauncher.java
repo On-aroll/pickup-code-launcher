@@ -23,11 +23,15 @@ final class DeepLinkLauncher {
 
         if (destination.openAppWhenDeepLinkUnavailable) {
             if (tryOpenInstalledApp(context, destination)) {
-                Toast.makeText(
-                        context,
-                        destination.title + "未找到直达页面，已打开官方 App，请在 App 内进入对应入口",
-                        Toast.LENGTH_LONG
-                ).show();
+                String hint;
+                if (destination == Destination.DOUYIN_PENDING) {
+                    hint = "已打开抖音商城，请点左上角「我的订单」查看待收货";
+                } else if (destination == Destination.KUAISHOU_PENDING) {
+                    hint = "已打开快手，请进入快手小店点「我的订单」";
+                } else {
+                    hint = destination.title + "未找到直达页面，已打开官方 App，请在 App 内进入对应入口";
+                }
+                Toast.makeText(context, hint, Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(
                         context,
