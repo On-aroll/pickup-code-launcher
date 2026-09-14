@@ -72,6 +72,9 @@ public final class MainActivity extends Activity {
         if ("cn.pickup.launcher.OPEN_KUAISHOU_PENDING".equals(action)) {
             return Destination.KUAISHOU_PENDING;
         }
+        if ("cn.pickup.launcher.OPEN_BILIBILI_PENDING".equals(action)) {
+            return Destination.BILIBILI_PENDING;
+        }
         return null;
     }
 
@@ -305,6 +308,15 @@ public final class MainActivity extends Activity {
                         Color.rgb(255, 73, 6)
                 ));
                 break;
+            case BILIBILI_PENDING:
+                root.addView(serviceRow(
+                        destination,
+                        "哔哩哔哩订单",
+                        "打开会员购订单与待收货",
+                        Color.rgb(255, 240, 246),
+                        Color.rgb(251, 114, 153)
+                ));
+                break;
         }
     }
 
@@ -330,6 +342,8 @@ public final class MainActivity extends Activity {
                 return "抖音订单";
             case KUAISHOU_PENDING:
                 return "快手订单";
+            case BILIBILI_PENDING:
+                return "哔哩订单";
         }
         return destination.title;
     }

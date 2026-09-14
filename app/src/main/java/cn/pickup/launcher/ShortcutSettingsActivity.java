@@ -345,6 +345,9 @@ public final class ShortcutSettingsActivity extends Activity {
             case DOUYIN_PENDING:
                 return R.drawable.ic_shortcut_douyin;
             case KUAISHOU_PENDING:
+                return R.drawable.ic_shortcut_kuaishou;
+            case BILIBILI_PENDING:
+                return R.drawable.ic_shortcut_bilibili;
             default:
                 return R.drawable.ic_shortcut_kuaishou;
         }

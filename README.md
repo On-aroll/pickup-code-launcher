@@ -17,7 +17,7 @@ https://github.com/On-aroll/pickup-code-launcher/releases/latest
 - 快速打开菜鸟、淘宝和拼多多取件码
 - 一键跳转到淘宝订单列表、拼多多订单页
 - 查看京东、小红书待取快递
-- 查看抖音、快手订单列表
+- 查看抖音、快手、哔哩哔哩订单列表
 - 对应 App 无法打开时自动尝试网页入口
 - 支持应用长按快捷操作
 - 支持将任意入口固定为独立桌面图标
@@ -26,6 +26,12 @@ https://github.com/On-aroll/pickup-code-launcher/releases/latest
 - 不需要网络权限和后端服务
 
 ## 更新记录
+
+### v2.5.6（2026-09-14）
+
+- 新增哔哩哔哩订单入口，直达会员购「我的」页（含待收货）
+- 抖音订单入口优先尝试 App 内打开「我的订单」搜索页，并给出明确引导提示
+- 网页版补齐哔哩哔哩入口，修正抖音网页兜底链接
 
 ### v2.1.0（2026-09-13）
 
@@ -97,6 +103,6 @@ keytool -genkeypair -v -keystore release-keystore.jks -keyalg RSA -keysize 2048 
 
 本项目使用 MIT License。
 
-当前版本：2.5.0
+当前版本：2.5.6
 
-最后核对日期：2026-09-13。
+最后核对日期：2026-09-14。

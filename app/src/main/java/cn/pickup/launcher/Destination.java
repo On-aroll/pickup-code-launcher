@@ -117,6 +117,17 @@ enum Destination {
             },
             "https://www.kwaixiaodian.com/",
             true
+    ),
+    BILIBILI_PENDING(
+            "bilibili_pending",
+            "哔哩哔哩订单",
+            "哔",
+            "tv.danmaku.bili",
+            new String[] {
+                    "https://mall.bilibili.com/neul/index.html?page=box_me&noTitleBar=1",
+                    "bilibili://"
+            },
+            "https://mall.bilibili.com/neul/index.html?page=box_me&noTitleBar=1"
     );
 
     final String key;
