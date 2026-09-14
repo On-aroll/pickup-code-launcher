@@ -27,6 +27,11 @@ https://github.com/On-aroll/pickup-code-launcher/releases/latest
 
 ## 更新记录
 
+### v2.6.0（2026-09-14）
+
+- 快手入口改为在 App 内直接打开「我的订单」页（待付款/待发货/待收货/待评价），不再停留小店首页
+- 抖音入口恢复纯 scheme 唤起，优先抖音商城，其次极速版，最后主 App
+
 ### v2.5.9（2026-09-14）
 
 - 抖音入口改为在 App 内打开官方商城网页版（带登录态），内含「我的订单」入口
@@ -116,6 +121,6 @@ keytool -genkeypair -v -keystore release-keystore.jks -keyalg RSA -keysize 2048 
 
 本项目使用 MIT License。
 
-当前版本：2.5.9
+当前版本：2.6.0
 
 最后核对日期：2026-09-14。

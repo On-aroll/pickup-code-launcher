@@ -97,7 +97,6 @@ enum Destination {
             "抖",
             "com.ss.android.ugc.aweme",
             new String[] {
-                    "snssdk1128://webview?url=https%3A%2F%2Fwww.douyin.com%2Fmall&from=webview&refer=web",
                     "snssdk1128://",
                     "snssdk1128://feed?refer=web"
             },
@@ -110,14 +109,16 @@ enum Destination {
             "快",
             "com.smile.gifmaker",
             new String[] {
+                    "ksnebula://webview?url=https%3A%2F%2Fapp.kwaixiaodian.com%2Fpage%2Fkwaishop-trade-order-list-app%3FlayoutType%3D4%26hyId%3DkwaishopOrder",
                     "ksnebula://merchanthome",
                     "ksnebula://mywallet",
                     "ksnebula://",
+                    "kwai://webview?url=https%3A%2F%2Fapp.kwaixiaodian.com%2Fpage%2Fkwaishop-trade-order-list-app%3FlayoutType%3D4%26hyId%3DkwaishopOrder",
                     "kwai://merchanthome",
                     "kwai://mywallet",
                     "kwai://"
             },
-            "https://www.kwaixiaodian.com/",
+            "https://app.kwaixiaodian.com/page/kwaishop-trade-order-list-app?layoutType=4&hyId=kwaishopOrder",
             true
     ),
     BILIBILI_PENDING(
@@ -172,7 +173,7 @@ enum Destination {
     String[] candidatePackages() {
         switch (this) {
             case DOUYIN_PENDING:
-                return new String[] {"com.ss.android.ugc.livelite", "com.ss.android.ugc.aweme", "com.ss.android.ugc.aweme.lite"};
+                return new String[] {"com.ss.android.ugc.livelite", "com.ss.android.ugc.aweme.lite", "com.ss.android.ugc.aweme"};
             case KUAISHOU_PENDING:
                 return new String[] {"com.kuaishou.nebula", "com.smile.gifmaker"};
             default:
