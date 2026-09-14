@@ -21,13 +21,20 @@ final class DeepLinkLauncher {
             }
         }
 
-        if (destination.openAppWhenDeepLinkUnavailable
-                && tryOpenInstalledApp(context, destination)) {
-            Toast.makeText(
-                    context,
-                    destination.title + "未找到直达页面，已打开官方 App，请在 App 内进入对应入口",
-                    Toast.LENGTH_LONG
-            ).show();
+        if (destination.openAppWhenDeepLinkUnavailable) {
+            if (tryOpenInstalledApp(context, destination)) {
+                Toast.makeText(
+                        context,
+                        destination.title + "未找到直达页面，已打开官方 App，请在 App 内进入对应入口",
+                        Toast.LENGTH_LONG
+                ).show();
+            } else {
+                Toast.makeText(
+                        context,
+                        "未安装" + destination.title + "，请先安装对应 App 后重试",
+                        Toast.LENGTH_LONG
+                ).show();
+            }
             return;
         }
 

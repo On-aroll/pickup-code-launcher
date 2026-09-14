@@ -8,7 +8,9 @@
         <package android:name="com.jingdong.app.mall" />
         <package android:name="com.xingin.xhs" />
         <package android:name="com.ss.android.ugc.aweme" />
+        <package android:name="com.ss.android.ugc.livelite" />
         <package android:name="com.smile.gifmaker" />
+        <package android:name="com.kuaishou.nebula" />
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="cainiao" />
@@ -40,6 +42,10 @@
         <intent>
             <action android:name="android.intent.action.VIEW" />
             <data android:scheme="kwai" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="ksnebula" />
         </intent>
     </queries>
 

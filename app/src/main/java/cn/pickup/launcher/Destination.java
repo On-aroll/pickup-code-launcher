@@ -110,6 +110,7 @@ enum Destination {
             "快",
             "com.smile.gifmaker",
             new String[] {
+                    "ksnebula://",
                     "kwai://merchanthome",
                     "kwai://home",
                     "kwai://"
