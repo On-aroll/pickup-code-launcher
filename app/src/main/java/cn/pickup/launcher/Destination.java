@@ -97,9 +97,9 @@ enum Destination {
             "抖",
             "com.ss.android.ugc.aweme",
             new String[] {
+                    "snssdk1128://",
                     "snssdk1128://search/tabs?keyword=%E6%88%91%E7%9A%84%E8%AE%A2%E5%8D%95",
-                    "snssdk1128://feed?refer=web",
-                    "snssdk1128://"
+                    "snssdk1128://feed?refer=web"
             },
             "https://haohuo.jinritemai.com/views/pages/index/order-list",
             true
@@ -158,7 +158,7 @@ enum Destination {
     String[] candidatePackages() {
         switch (this) {
             case DOUYIN_PENDING:
-                return new String[] {"com.ss.android.ugc.aweme", "com.ss.android.ugc.aweme.lite"};
+                return new String[] {"com.ss.android.ugc.livelite", "com.ss.android.ugc.aweme", "com.ss.android.ugc.aweme.lite"};
             case KUAISHOU_PENDING:
                 return new String[] {"com.smile.gifmaker", "com.kuaishou.nebula"};
             default:

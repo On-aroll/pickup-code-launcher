@@ -16,7 +16,7 @@ final class DeepLinkLauncher {
 
     static void open(Context context, Destination destination) {
         for (String appUri : destination.appUris) {
-            if (tryOpen(context, appUri, destination.packageName)) {
+            if (tryOpen(context, appUri, destination)) {
                 return;
             }
         }
@@ -33,7 +33,7 @@ final class DeepLinkLauncher {
 
         // Some versions of the official apps can render their own HTTPS pages.
         // Try that route before handing the URL to the user's browser.
-        if (tryOpen(context, destination.webUri, destination.packageName)) {
+        if (tryOpen(context, destination.webUri, destination)) {
             return;
         }
 
@@ -65,14 +65,16 @@ final class DeepLinkLauncher {
         return false;
     }
 
-    private static boolean tryOpen(Context context, String uri, String packageName) {
+    private static boolean tryOpen(Context context, String uri, Destination destination) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
         if (!(context instanceof android.app.Activity)) {
             intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         }
 
-        if (packageName != null) {
+        // Try each candidate package in order (primary, mall/lite variants).
+        // This lets e.g. Douyin Mall be preferred when it is installed.
+        for (String packageName : destination.candidatePackages()) {
             Intent scoped = new Intent(intent);
             scoped.setPackage(packageName);
             if (resolveAndStart(context, scoped, uri, packageName)) {
@@ -81,8 +83,7 @@ final class DeepLinkLauncher {
         }
 
         // Last chance before the web fallback: let the system pick any app
-        // that registered the scheme. This covers lite/variant packages
-        // whose ids differ from the primary one (e.g. Kuaishou Nebula).
+        // that registered the scheme. This covers packages we did not list.
         return resolveAndStart(context, intent, uri, null);
     }
 
