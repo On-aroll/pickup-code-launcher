@@ -4,6 +4,7 @@ import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.util.Log;
 import android.widget.Toast;
@@ -15,6 +16,17 @@ final class DeepLinkLauncher {
     }
 
     static void open(Context context, Destination destination) {
+        // The Douyin Mall app (com.ss.android.ugc.livelite) does not register the
+        // bare snssdk1128:// scheme, so the main Douyin app would always win the
+        // deep-link race and open the feed instead. Launch the mall app directly.
+        if (destination == Destination.DOUYIN_PENDING
+                && isPackageInstalled(context, "com.ss.android.ugc.livelite")) {
+            if (tryOpenInstalledApp(context, destination)) {
+                Toast.makeText(context, "已打开抖音商城，点「我的订单」查看待收货", Toast.LENGTH_LONG).show();
+                return;
+            }
+        }
+
         for (String appUri : destination.appUris) {
             if (tryOpen(context, appUri, destination)) {
                 return;
@@ -50,6 +62,15 @@ final class DeepLinkLauncher {
 
         if (!tryOpen(context, destination.webUri, null)) {
             Toast.makeText(context, "暂时无法打开" + destination.title, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private static boolean isPackageInstalled(Context context, String packageName) {
+        try {
+            context.getPackageManager().getPackageInfo(packageName, 0);
+            return true;
+        } catch (PackageManager.NameNotFoundException exception) {
+            return false;
         }
     }
 
