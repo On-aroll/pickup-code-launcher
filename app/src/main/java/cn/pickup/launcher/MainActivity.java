@@ -1,5 +1,29 @@
 package cn.pickup.launcher;
 
+import android.app.AlertDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.io.InputStream;
+import java.util.concurrent.atomic.AtomicReference;
+
 import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -18,6 +42,10 @@ public final class MainActivity extends Activity {
     private static final int PAGE_BACKGROUND = Color.rgb(247, 248, 244);
     private static final int TEXT_PRIMARY = Color.rgb(27, 29, 27);
     private static final int TEXT_SECONDARY = Color.rgb(91, 96, 91);
+
+    private static final int REQUEST_PICK_CODE_IMAGE = 1;
+    private static final AtomicReference<TinyCnn> OCR_MODEL = new AtomicReference<>();
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +144,7 @@ public final class MainActivity extends Activity {
         descriptionParams.bottomMargin = dp(26);
         description.setLayoutParams(descriptionParams);
         root.addView(description);
+        root.addView(ocrEntry());
 
         for (String key : ShortcutSettingsActivity.loadOrder(this)) {
             if (ShortcutSettingsActivity.KEY_OPEN_APP.equals(key)) {
@@ -214,6 +243,196 @@ public final class MainActivity extends Activity {
         ));
 
         return scrollView;
+    }
+
+    private View ocrEntry() {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(dp(16), dp(15), dp(14), dp(15));
+        row.setMinimumHeight(dp(82));
+        row.setBackground(rounded(Color.rgb(235, 242, 250), 8));
+        row.setClickable(true);
+        row.setFocusable(true);
+        row.setContentDescription("从截图识别取件码");
+        row.setOnClickListener(view -> pickCodeImage());
+
+        LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        rowParams.bottomMargin = dp(12);
+        row.setLayoutParams(rowParams);
+
+        TextView mark = text("码", 18, Color.WHITE, Typeface.BOLD);
+        mark.setGravity(Gravity.CENTER);
+        mark.setBackground(rounded(Color.rgb(37, 99, 235), 7));
+        row.addView(mark, new LinearLayout.LayoutParams(dp(40), dp(40)));
+
+        LinearLayout labels = new LinearLayout(this);
+        labels.setOrientation(LinearLayout.VERTICAL);
+        labels.setPadding(dp(14), 0, dp(10), 0);
+
+        TextView titleView = text("识别取件码", 17, TEXT_PRIMARY, Typeface.BOLD);
+        labels.addView(titleView);
+
+        TextView subtitleView = text("从截图识别取件码，复制或直达取件", 13, TEXT_SECONDARY, Typeface.NORMAL);
+        LinearLayout.LayoutParams subtitleParams = verticalParams(dp(3));
+        subtitleView.setLayoutParams(subtitleParams);
+        labels.addView(subtitleView);
+
+        row.addView(labels, new LinearLayout.LayoutParams(
+                0,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                1f
+        ));
+
+        TextView arrow = text("›", 28, Color.rgb(37, 99, 235), Typeface.NORMAL);
+        arrow.setGravity(Gravity.CENTER);
+        row.addView(arrow, new LinearLayout.LayoutParams(dp(28), dp(44)));
+
+        return row;
+    }
+
+    private void pickCodeImage() {
+        Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+        intent.setType("image/*");
+        try {
+            startActivityForResult(intent, REQUEST_PICK_CODE_IMAGE);
+        } catch (Exception e) {
+            Toast.makeText(this, "无法打开相册", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_PICK_CODE_IMAGE && resultCode == RESULT_OK && data != null && data.getData() != null) {
+            Uri uri = data.getData();
+            Toast.makeText(this, "识别中…", Toast.LENGTH_SHORT).show();
+            new Thread(() -> {
+                Bitmap bmp = decodeSampled(uri);
+                if (bmp == null) {
+                    mainHandler.post(() -> Toast.makeText(this, "读取图片失败", Toast.LENGTH_SHORT).show());
+                    return;
+                }
+                TinyCnn model = ocrModel();
+                if (model == null) {
+                    bmp.recycle();
+                    mainHandler.post(() -> Toast.makeText(this, "模型加载失败", Toast.LENGTH_SHORT).show());
+                    return;
+                }
+                PickupOcr.Result result = PickupOcr.recognize(bmp, model);
+                bmp.recycle();
+                mainHandler.post(() -> showOcrResult(result));
+            }).start();
+        }
+    }
+
+    private TinyCnn ocrModel() {
+        TinyCnn model = OCR_MODEL.get();
+        if (model != null) {
+            return model;
+        }
+        synchronized (OCR_MODEL) {
+            model = OCR_MODEL.get();
+            if (model != null) {
+                return model;
+            }
+            try (InputStream in = getAssets().open("pickup_ocr.bin")) {
+                model = TinyCnn.load(in);
+                OCR_MODEL.set(model);
+                return model;
+            } catch (Exception e) {
+                return null;
+            }
+        }
+    }
+
+    private Bitmap decodeSampled(Uri uri) {
+        BitmapFactory.Options bounds = new BitmapFactory.Options();
+        bounds.inJustDecodeBounds = true;
+        try (InputStream in = getContentResolver().openInputStream(uri)) {
+            BitmapFactory.decodeStream(in, null, bounds);
+        } catch (Exception e) {
+            return null;
+        }
+        int sample = 1;
+        int edge = Math.max(bounds.outWidth, bounds.outHeight);
+        while (edge / (sample * 2) >= 4096) {
+            sample *= 2;
+        }
+        try (InputStream in = getContentResolver().openInputStream(uri)) {
+            BitmapFactory.Options opts = new BitmapFactory.Options();
+            opts.inSampleSize = sample;
+            return BitmapFactory.decodeStream(in, null, opts);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private void showOcrResult(PickupOcr.Result result) {
+        if (result == null || result.code == null || result.code.isEmpty()) {
+            Toast.makeText(this, "未识别到取件码：请截取包含取件码的清晰截图", Toast.LENGTH_LONG).show();
+            return;
+        }
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setPadding(dp(24), dp(20), dp(24), dp(8));
+
+        TextView codeView = new TextView(this);
+        codeView.setText(result.code);
+        codeView.setTextSize(52);
+        codeView.setTextColor(Color.rgb(20, 30, 25));
+        codeView.setTypeface(Typeface.create("monospace", Typeface.BOLD));
+        codeView.setGravity(Gravity.CENTER);
+        codeView.setLetterSpacing(0.25f);
+        content.addView(codeView);
+
+        StringBuilder confText = new StringBuilder("置信度 ");
+        for (float c : result.confidences) {
+            confText.append(String.format(java.util.Locale.US, "%.0f%% ", c * 100f));
+        }
+        TextView confView = new TextView(this);
+        confView.setText(confText.toString().trim());
+        confView.setTextSize(13);
+        confView.setTextColor(TEXT_SECONDARY);
+        confView.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams confParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        confParams.topMargin = dp(6);
+        confView.setLayoutParams(confParams);
+        content.addView(confView);
+
+        TextView hint = new TextView(this);
+        hint.setText("长按取件码可复制");
+        hint.setTextSize(12);
+        hint.setTextColor(TEXT_SECONDARY);
+        hint.setGravity(Gravity.CENTER);
+        LinearLayout.LayoutParams hintParams = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        hintParams.topMargin = dp(10);
+        hint.setLayoutParams(hintParams);
+        content.addView(hint);
+
+        new AlertDialog.Builder(this)
+                .setTitle("取件码识别")
+                .setView(content)
+                .setPositiveButton("复制", (dialog, which) -> copyCode(result.code))
+                .setNegativeButton("去菜鸟取件", (dialog, which) ->
+                        DeepLinkLauncher.open(this, Destination.CAINIAO))
+                .setNeutralButton("关闭", null)
+                .show();
+    }
+
+    private void copyCode(String code) {
+        ClipboardManager clipboard = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+        if (clipboard != null) {
+            clipboard.setPrimaryClip(ClipData.newPlainText("取件码", code));
+            Toast.makeText(this, "取件码已复制：" + code, Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void addEntryRow(LinearLayout root, Destination destination) {
