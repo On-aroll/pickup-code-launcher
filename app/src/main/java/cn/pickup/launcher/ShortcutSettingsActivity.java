@@ -273,7 +273,8 @@ public final class ShortcutSettingsActivity extends Activity {
         List<String> order = loadOrder(context);
         Set<String> selected = loadSelection(context);
         List<ShortcutInfo> shortcuts = new ArrayList<>();
-        int maxCount = 4;
+        int maxCount = Math.min(4, Math.max(0, manager.getMaxShortcutCountPerActivity()
+                - manager.getManifestShortcuts().size()));
         for (String key : order) {
             if (!selected.contains(key)) {
                 continue;
@@ -283,7 +284,7 @@ public final class ShortcutSettingsActivity extends Activity {
             }
             Intent intent;
             if (KEY_OPEN_APP.equals(key)) {
-                intent = new Intent(context, MainActivity.class);
+                intent = new Intent(context, MainActivity.class).setAction(Intent.ACTION_MAIN);
             } else {
                 Destination destination = Destination.fromKey(key);
                 if (destination == null) {

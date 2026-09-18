@@ -30,38 +30,49 @@ jobs:
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEYSTORE_KEY_PASSWORD: ${{ secrets.KEYSTORE_KEY_PASSWORD }}
           KEYSTORE_ALIAS: ${{ secrets.KEYSTORE_ALIAS }}
         run: |
-          if [ -n "$KEYSTORE_BASE64" ]; then
-            echo "$KEYSTORE_BASE64" | base64 -d > release.jks
-            printf 'storeFile=release.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
-              "$KEYSTORE_PASSWORD" "$KEYSTORE_ALIAS" "$KEYSTORE_PASSWORD" > keystore.properties
-            ./gradlew assembleRelease
-            cp app/build/outputs/apk/release/app-release.apk "pickup-code-launcher-${{ github.ref_name }}.apk"
-          else
-            ./gradlew assembleDebug
-            cp app/build/outputs/apk/debug/app-debug.apk "pickup-code-launcher-${{ github.ref_name }}.apk"
-          fi
-          ls -la pickup-code-launcher-*.apk
+          : "${KEYSTORE_BASE64:?正式发布必须配置 KEYSTORE_BASE64}"
+          : "${KEYSTORE_PASSWORD:?正式发布必须配置 KEYSTORE_PASSWORD}"
+          : "${KEYSTORE_ALIAS:?正式发布必须配置 KEYSTORE_ALIAS}"
+          trap 'rm -f release.jks keystore.properties' EXIT
+          printf '%s' "$KEYSTORE_BASE64" | base64 -d > release.jks
+          printf 'storeFile=release.jks\nstorePassword=%s\nkeyAlias=%s\nkeyPassword=%s\n' \
+            "$KEYSTORE_PASSWORD" "$KEYSTORE_ALIAS" "${KEYSTORE_KEY_PASSWORD:-$KEYSTORE_PASSWORD}" > keystore.properties
+          ./gradlew testDebugUnitTest lintRelease assembleRelease
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify app/build/outputs/apk/release/app-release.apk
+          cp app/build/outputs/apk/release/app-release.apk "pickup-code-launcher-${GITHUB_REF_NAME}.apk"
 
       - name: 生成发布说明
         run: |
-          APK=$(ls pickup-code-launcher-*.apk | head -n1)
+          APK="pickup-code-launcher-${GITHUB_REF_NAME}.apk"
           SHA=$(sha256sum "$APK" | awk '{print $1}')
+          TAG="$GITHUB_REF_NAME"
+          VERSION="${TAG#v}"
+          BUILD_VERSION=$(sed -n 's/.*versionName = "\([^"]*\)".*/\1/p' app/build.gradle.kts)
+          test "$VERSION" = "$BUILD_VERSION" || { echo "标签和源码版本不一致"; exit 1; }
+          CHANGELOG=$(awk -v heading="### v${VERSION}（" '
+            index($0, heading) == 1 { found=1; next }
+            found && /^##+ / { exit }
+            found { print }
+          ' README.md)
+          if [ -z "$CHANGELOG" ]; then
+            echo "README 缺少当前版本更新说明"; exit 1
+          fi
           printf '%s\n' \
             "## 下载说明" \
             "" \
-            "- 版本：${{ github.ref_name }}" \
+            "- 版本：$TAG" \
             "- 适用系统：Android 6.0 及以上" \
             "- 应用包名：cn.pickup.launcher" \
             "- 安装文件：$APK" \
             "- SHA-256：\`$SHA\`" \
             "" \
             "## 本次更新" \
-            "" \
-            "- 淘宝、拼多多待取件直达入口，一键跳转到待取列表" \
-            "- 对应 App 未安装时自动尝试网页入口" \
-            "- 详细说明见 README" > release_body.md
+            "" > release_body.md
+          printf '%s\n\n' "$CHANGELOG" >> release_body.md
+          printf '%s\n' "- 详细说明见 README" >> release_body.md
 
       - name: 发布 Release
         uses: softprops/action-gh-release@v2

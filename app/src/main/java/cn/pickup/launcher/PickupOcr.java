@@ -4,8 +4,9 @@ import android.graphics.Bitmap;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 
 /**
  * On-device pickup-code OCR pipeline (no OpenCV / ML Kit).
@@ -13,14 +14,13 @@ import java.util.List;
  *   grayscale -> 3x3 median -> Otsu binarization -> connected components
  *   -> merge split strokes -> row clustering -> best numeric window -> CNN digits
  *
- * The pipeline mirrors ocr-model/verify_pipeline.py which reports 99.75%
- * full-string accuracy on synthetic screenshots.
+ * The Python model benchmark is not a measurement of this screenshot pipeline.
  */
 public final class PickupOcr {
 
-    private static final int MAX_EDGE = 2400;
+    static final int MAX_EDGE = 2400;
     private static final int MIN_BLOB_AREA = 12;
-    private static final float MERGE_GAP_RATIO = 0.55f;
+    private static final int MAX_COMPONENTS = 512;
     private static final float MERGE_OVERLAP_RATIO = 0.5f;
 
     /** min / max character height accepted as a digit. */
@@ -60,6 +60,17 @@ public final class PickupOcr {
             bmp.recycle();
         }
 
+        return recognizePixels(pixels, w, h, cnn);
+    }
+
+    /** Same pipeline as the Bitmap entry point, also usable in JVM regression tests. */
+    static Result recognizePixels(int[] pixels, int w, int h, TinyCnn cnn) {
+        if (w <= 0 || h <= 0 || (long) w * h != pixels.length
+                || w > MAX_EDGE || h > MAX_EDGE) {
+            throw new IllegalArgumentException("Invalid image dimensions");
+        }
+        checkCancelled();
+
         byte[] gray = toGray(pixels, w, h);
         median3(gray, w, h);
         byte[] bin = otsu(gray, w, h);
@@ -70,10 +81,11 @@ public final class PickupOcr {
         }
 
         List<int[]> boxes = connectedComponents(bin, w, h);
+        if (boxes.size() > MAX_COMPONENTS) return new Result("", new float[0], boxes.size());
         List<int[]> merged = mergeBoxes(boxes);
 
         List<List<int[]>> rows = clusterRows(merged);
-        List<int[]> best = bestNumericWindow(rows, cnn, bin);
+        List<int[]> best = bestNumericWindow(rows, cnn, bin, w, h);
         if (best == null) {
             return new Result("", new float[0], merged.size());
         }
@@ -98,7 +110,9 @@ public final class PickupOcr {
             int r = (p >> 16) & 0xFF;
             int g = (p >> 8) & 0xFF;
             int b = p & 0xFF;
-            out[i] = (byte) ((r * 299 + g * 587 + b * 114) / 1000);
+            int luminance = (r * 299 + g * 587 + b * 114) / 1000;
+            int alpha = p >>> 24;
+            out[i] = (byte) ((luminance * alpha + 255 * (255 - alpha)) / 255);
         }
         return out;
     }
@@ -107,6 +121,7 @@ public final class PickupOcr {
         byte[] dst = new byte[src.length];
         int[] win = new int[9];
         for (int y = 0; y < h; y++) {
+            checkCancelled();
             int rowBase = y * w;
             for (int x = 0; x < w; x++) {
                 int n = 0;
@@ -161,7 +176,7 @@ public final class PickupOcr {
         }
         byte[] out = new byte[gray.length];
         for (int i = 0; i < gray.length; i++) {
-            out[i] = (gray[i] & 0xFF) < threshold ? (byte) 0 : (byte) 255;
+            out[i] = (gray[i] & 0xFF) <= threshold ? (byte) 0 : (byte) 255;
         }
         return out;
     }
@@ -176,18 +191,20 @@ public final class PickupOcr {
 
     // ---------- segmentation ----------
 
-    /** 4-connected components; returns boxes {top, x0, x1, bottom}. */
+    /** 8-connected components; returns boxes {top, x0, x1, bottom}. */
     private static List<int[]> connectedComponents(byte[] bin, int w, int h) {
         byte[] visited = new byte[bin.length];
         int[] queue = new int[bin.length];
         List<int[]> boxes = new ArrayList<>();
         for (int start = 0; start < bin.length; start++) {
+            if ((start & 4095) == 0) checkCancelled();
             if ((bin[start] & 0xFF) != 0 || visited[start] != 0) continue;
             int qHead = 0, qTail = 0;
             queue[qTail++] = start;
             visited[start] = 1;
             int minY = h, maxY = -1, minX = w, maxX = -1, area = 0;
             while (qHead < qTail) {
+                if ((qHead & 4095) == 0) checkCancelled();
                 int p = queue[qHead++];
                 int x = p % w, y = p / w;
                 area++;
@@ -195,25 +212,21 @@ public final class PickupOcr {
                 if (y > maxY) maxY = y;
                 if (x < minX) minX = x;
                 if (x > maxX) maxX = x;
-                int[] nb = new int[4];
-                int nn = 0;
-                if (x > 0) nb[nn++] = p - 1;
-                if (x < w - 1) nb[nn++] = p + 1;
-                if (y > 0) nb[nn++] = p - w;
-                if (y < h - 1) nb[nn++] = p + w;
-                for (int k = 0; k < nn; k++) {
-                    int q = nb[k];
-                    if ((bin[q] & 0xFF) == 0 && visited[q] == 0) {
-                        visited[q] = 1;
-                        queue[qTail++] = q;
+                for (int yy = Math.max(0, y - 1); yy <= Math.min(h - 1, y + 1); yy++) {
+                    for (int xx = Math.max(0, x - 1); xx <= Math.min(w - 1, x + 1); xx++) {
+                        int q = yy * w + xx;
+                        if ((bin[q] & 0xFF) == 0 && visited[q] == 0) {
+                            visited[q] = 1;
+                            queue[qTail++] = q;
+                        }
                     }
                 }
             }
             if (area >= MIN_BLOB_AREA) {
                 int ch = maxY - minY + 1;
-                int cw = maxX - minX + 1;
                 if (ch >= MIN_CHAR_H && ch <= MAX_CHAR_H) {
                     boxes.add(new int[]{minY, minX, maxX + 1, maxY + 1});
+                    if (boxes.size() > MAX_COMPONENTS) return boxes;
                 }
             }
         }
@@ -223,19 +236,21 @@ public final class PickupOcr {
     /** Merge vertical fragments of the same glyph (e.g. "4" made of two strokes). */
     private static List<int[]> mergeBoxes(List<int[]> boxes) {
         List<int[]> list = new ArrayList<>(boxes);
-        list.sort(Comparator.comparingInt(b -> b[1]));
+        Collections.sort(list, (a, b) -> Integer.compare(a[1], b[1]));
         boolean changed;
         do {
+            checkCancelled();
             changed = false;
             for (int i = 0; i < list.size(); i++) {
                 int[] a = list.get(i);
                 for (int j = i + 1; j < list.size(); j++) {
                     int[] b = list.get(j);
-                    int aw = a[2] - a[1], bw = b[2] - b[1];
                     int ah = a[3] - a[0], bh = b[3] - b[0];
                     int gap = b[1] - a[2];
                     int overlap = Math.min(a[3], b[3]) - Math.max(a[0], b[0]);
-                    boolean horizontalNear = gap < Math.max(aw, bw) * MERGE_GAP_RATIO;
+                    // Never merge two neighboring digits solely because their gap is small.
+                    boolean horizontalNear = gap < 0
+                            && Math.max(a[2], b[2]) - Math.min(a[1], b[1]) < Math.max(ah, bh);
                     boolean verticalOverlap = overlap > Math.min(ah, bh) * MERGE_OVERLAP_RATIO;
                     if (horizontalNear && verticalOverlap) {
                         a[0] = Math.min(a[0], b[0]);
@@ -257,8 +272,9 @@ public final class PickupOcr {
     private static List<List<int[]>> clusterRows(List<int[]> boxes) {
         List<List<int[]>> rows = new ArrayList<>();
         List<int[]> sorted = new ArrayList<>(boxes);
-        sorted.sort(Comparator.comparingInt(b -> b[0]));
+        Collections.sort(sorted, (a, b) -> Integer.compare(a[0], b[0]));
         for (int[] box : sorted) {
+            checkCancelled();
             boolean placed = false;
             for (List<int[]> row : rows) {
                 int minTop = Integer.MAX_VALUE, maxBottom = Integer.MIN_VALUE, sumH = 0;
@@ -282,33 +298,35 @@ public final class PickupOcr {
             }
         }
         for (List<int[]> row : rows) {
-            row.sort(Comparator.comparingInt(b -> b[1]));
+            Collections.sort(row, (a, b) -> Integer.compare(a[1], b[1]));
         }
         return rows;
     }
 
     private static final class Window {
         List<int[]> boxes = new ArrayList<>();
-        float avgConf = 0f;
-        float widthSpread = 0f;
-        float gapSpread = 0f;
         float score = -1f;
     }
 
-    /** Pick the 4-8 consecutive digits that look like a pickup code. */
-    private static List<int[]> bestNumericWindow(List<List<int[]>> rows, TinyCnn cnn, byte[] bin) {
+    /** Evaluate complete groups only: never truncate a phone/order number to 4-8 digits. */
+    private static List<int[]> bestNumericWindow(List<List<int[]>> rows, TinyCnn cnn, byte[] bin, int w, int h) {
         Window best = new Window();
         for (List<int[]> row : rows) {
             if (row.size() < 4) continue;
             int n = row.size();
             TinyCnn.Result[] res = new TinyCnn.Result[n];
             for (int i = 0; i < n; i++) {
-                res[i] = cnn.predict(to28(bin, 0, 0, row.get(i)));
+                checkCancelled();
+                res[i] = cnn.predict(to28(bin, w, h, row.get(i)));
             }
-            for (int start = 0; start < n; start++) {
-                for (int len = 4; len <= 8 && start + len <= n; len++) {
+            for (int start = 0; start < n;) {
+                int end = start + 1;
+                while (end < n && sameGroup(row.get(end - 1), row.get(end))) end++;
+                int len = end - start;
+                if (len >= 4 && len <= 8) {
                     List<int[]> sub = row.subList(start, start + len);
                     float sumConf = 0f;
+                    float minConf = 1f;
                     int minW = Integer.MAX_VALUE, maxW = 0;
                     int minGap = Integer.MAX_VALUE, maxGap = 0;
                     for (int i = 0; i < len; i++) {
@@ -317,6 +335,7 @@ public final class PickupOcr {
                         minW = Math.min(minW, bw);
                         maxW = Math.max(maxW, bw);
                         sumConf += res[start + i].confidence;
+                        minConf = Math.min(minConf, res[start + i].confidence);
                         if (i > 0) {
                             int gap = b[1] - sub.get(i - 1)[2];
                             minGap = Math.min(minGap, gap);
@@ -328,17 +347,24 @@ public final class PickupOcr {
                     float gapSpread = maxGap <= 0 ? 0f : (float) (maxGap - minGap) / Math.max(maxGap, 1);
                     // digits: uniform width + even gaps + high confidence
                     float score = avgConf - widthSpread * 0.5f - gapSpread * 0.8f;
-                    if (score > best.score && avgConf >= 0.55f && widthSpread < 0.75f && gapSpread < 1.2f) {
+                    if (score > best.score && avgConf >= 0.8f && minConf >= 0.6f && widthSpread < 0.85f && gapSpread < 1.2f) {
                         best.score = score;
-                        best.avgConf = avgConf;
-                        best.widthSpread = widthSpread;
-                        best.gapSpread = gapSpread;
                         best.boxes = new ArrayList<>(sub);
                     }
                 }
+                start = end;
             }
         }
         return best.boxes.isEmpty() ? null : best.boxes;
+    }
+
+    private static boolean sameGroup(int[] a, int[] b) {
+        int maxH = Math.max(a[3] - a[0], b[3] - b[0]);
+        return b[1] - a[2] <= maxH;
+    }
+
+    private static void checkCancelled() {
+        if (Thread.currentThread().isInterrupted()) throw new CancellationException();
     }
 
     /** Tight crop -> center-pad to square -> 28x28 -> [0,1] digit=1. */

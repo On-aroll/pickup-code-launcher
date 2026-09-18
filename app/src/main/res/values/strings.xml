@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">快递取件2.0</string>
+    <string name="app_name">快递取件</string>
     <string name="shortcut_open_app">打开取件</string>
     <string name="shortcut_cainiao">菜鸟身份码</string>
     <string name="shortcut_cainiao_packages">菜鸟包裹</string>

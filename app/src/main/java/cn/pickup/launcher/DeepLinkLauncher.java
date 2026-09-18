@@ -1,7 +1,6 @@
 package cn.pickup.launcher;
 
 import android.content.ActivityNotFoundException;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -57,7 +56,7 @@ final class DeepLinkLauncher {
                 if (destination == Destination.DOUYIN_PENDING) {
                     hint = "已打开抖音商城，点「我的订单」查看待收货";
                 } else if (destination == Destination.KUAISHOU_PENDING) {
-                    hint = "已打开快手订单页，点「待收货」查看";
+                    hint = "已打开快手，请在 App 内进入「我的订单」查看待收货";
                 } else {
                     hint = destination.title + "未找到直达页面，已打开官方 App，请在 App 内进入对应入口";
                 }
@@ -134,11 +133,13 @@ final class DeepLinkLauncher {
 
         // Try each candidate package in order (primary, mall/lite variants).
         // This lets e.g. Douyin Mall be preferred when it is installed.
-        for (String packageName : destination.candidatePackages()) {
-            Intent scoped = new Intent(intent);
-            scoped.setPackage(packageName);
-            if (resolveAndStart(context, scoped, uri, packageName)) {
-                return true;
+        if (destination != null) {
+            for (String packageName : destination.candidatePackages()) {
+                Intent scoped = new Intent(intent);
+                scoped.setPackage(packageName);
+                if (resolveAndStart(context, scoped, uri, packageName)) {
+                    return true;
+                }
             }
         }
 
@@ -149,13 +150,10 @@ final class DeepLinkLauncher {
 
     private static boolean resolveAndStart(Context context, Intent intent, String uri, String label) {
         try {
-            ComponentName resolved = intent.resolveActivity(context.getPackageManager());
-            if (resolved == null) {
-                Log.i(TAG, "No activity resolved for " + uri + " with " + label);
-                return false;
-            }
+            // Android package visibility can hide a valid browser from resolveActivity.
+            // startActivity remains the authoritative check; failures are caught below.
             context.startActivity(intent);
-            Log.i(TAG, "Opened " + uri + " with " + resolved.flattenToShortString());
+            Log.i(TAG, "Opened " + uri + " with " + label);
             return true;
         } catch (ActivityNotFoundException | SecurityException | IllegalArgumentException exception) {
             Log.w(TAG, "Could not open " + uri + " with " + label, exception);

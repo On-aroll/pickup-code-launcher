@@ -1,11 +1,13 @@
 # ocr-model
 
-取件码识别模型的训练与验证（独立于 Android 主工程）。
+旧版数字识别模型的训练与验证（历史研究模块）。
+
+从 v2.8.0 起，Android 截图导入改用内置 ML Kit 中文文字识别，再提取码、取件点和地址并归纳为本地清单。本目录的数字 CNN 不再用于当前截图入口；保留代码和回归测试便于追溯。以下合成数据指标不代表新版中文识别准确率。
 
 ## 背景
 
-取件码（菜鸟 / 丰巢 / 京东 / 顺丰等）为 4–8 位纯数字串，通常以短信或截图形式出现。
-本模块用合成数据训练一个轻量 CNN，识别单个数字字符，端到端管线在整串取件码上的准确率为 99.75%。
+本模块仅研究 4–8 位连续数字串，不能覆盖所有平台的取件码格式（例如字母码、横线分段码）。
+本模块用合成数据训练一个轻量 CNN，识别单个数字字符；99.75% 是 Python 合成数字图管线的整串准确率，不是 Android 实际截图准确率。
 
 ## 管线
 
@@ -41,7 +43,19 @@ python train.py
 python verify_pipeline.py
 ```
 
-## Android 集成（下一步）
+## Android 集成（已完成）
 
-- 权重约 376 KB，可直接打包进 APK
-- 推理内核用纯 Java 实现（卷积/池化/全连接手写，约 100 行），避免引入 TFLite / ONNX 依赖
+- `export_weights.py` 将 PyTorch 权重导出为 `app/src/main/assets/pickup_ocr.bin`（约 400 KB）
+- `TinyCnn.java` 提供纯 Java 卷积、池化和全连接推理，避免引入 TFLite / ONNX 依赖
+- `PickupOcr.java` 完成图片预处理、连通域分割、字符归一化和结果校验
+- `MainActivity.java` 负责选图、后台识别、人工核对修改、复制和菜鸟跳转
+- `gen_test_vectors.py` 生成 PyTorch 对照向量，`TinyCnnTest.java` 校验 Java 推理结果
+- `PickupOcrTest.java` 从像素经过生产预处理、分割和候选选择，验证明暗背景、完整码长、长号码拒绝、相邻数字与取消任务；字形资源由 `tools/OcrFixtureGenerator.java` 生成并入库，CI 不依赖系统字体
+
+这些回归测试用于捕捉代码缺陷，不是代表性真实截图准确率测评。全屏文字、多个数字串、照片角度与复杂背景仍需要真实样本验证。
+
+安装 JDK 17 与 Android SDK 35 后，在仓库根目录运行：
+
+```powershell
+.\gradlew.bat test
+```
