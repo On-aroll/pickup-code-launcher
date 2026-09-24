@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>快递取件 · 把截图整理成待取清单</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23E8612C'/%3E%3Cpath d='M9 22l4-12 4 7 2-3 4 8' fill='none' stroke='%23fff' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@300;400;500;700;900&display=swap">
+<style>
+:root{--ink:#16181D;--ink2:#49515F;--ink3:#7C8593;--line:#E6EAF0;--p:#E8612C;--p-d:#C64E1F;--p-s:#FCEAE1;--bg:#F4F6F9;--go:#2F7D5B}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"Noto Sans SC",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1080px;margin:0 auto;padding:0 26px}
+a{text-decoration:none;color:inherit}
+nav{display:flex;align-items:center;gap:12px;height:62px}
+nav .lg{font-weight:900;font-size:19px;display:flex;align-items:center;gap:9px}
+nav .lg i{width:30px;height:30px;border-radius:8px;background:var(--p);display:grid;place-items:center}
+nav .gh{margin-left:auto;font-size:14px;font-weight:500;color:var(--ink2);border:1px solid var(--line);background:#fff;padding:8px 15px;border-radius:9px}
+.hero{padding:60px 0 50px;display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center}
+.kick{font-size:14px;font-weight:700;color:var(--p-d);background:var(--p-s);display:inline-block;padding:5px 14px;border-radius:100px;margin-bottom:20px}
+h1{font-size:clamp(32px,4.4vw,48px);font-weight:900;line-height:1.15;letter-spacing:-.5px;margin-bottom:18px}
+.lead{font-size:17px;color:var(--ink2);margin-bottom:28px}
+.btns{display:flex;gap:13px;flex-wrap:wrap}
+.btn{font-size:16px;font-weight:700;padding:14px 26px;border-radius:11px;display:inline-flex;align-items:center;gap:9px}
+.btn.pri{background:var(--p);color:#fff}
+.btn.ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.mininote{font-size:13px;color:var(--ink3);margin-top:16px}
+.phone{background:#fff;border:1px solid var(--line);border-radius:26px;padding:20px;box-shadow:0 24px 60px -28px rgba(200,78,31,.5)}
+.ph-h{font-size:13px;color:var(--ink3);margin-bottom:12px;display:flex;justify-content:space-between}
+.ph-tabs{display:flex;gap:6px;margin-bottom:14px}
+.ph-tabs span{flex:1;text-align:center;font-size:12px;padding:6px;border-radius:8px;background:var(--line2)}
+.ph-tabs span.on{background:var(--p);color:#fff}
+.grp{border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px}
+.grp .gt{font-size:13px;font-weight:700;display:flex;justify-content:space-between}
+.grp .gt em{font-style:normal;color:var(--p);font-size:12px}
+.grp .codes{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}
+.grp .codes i{font-style:normal;font-size:12px;background:var(--p-s);color:var(--p-d);padding:3px 9px;border-radius:7px;font-family:Consolas,monospace}
+section{padding:52px 0;border-top:1px solid var(--line)}
+.sh h2{font-size:clamp(22px,3vw,30px);font-weight:900;margin-bottom:8px}
+.sh p{color:var(--ink2);margin-bottom:32px;max-width:60ch}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+.fc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:22px}
+.fc .ic{width:42px;height:42px;border-radius:11px;background:var(--p-s);display:grid;place-items:center;margin-bottom:14px}
+.fc h3{font-size:16px;margin-bottom:6px}
+.fc p{font-size:13.5px;color:var(--ink3);margin:0}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;counter-reset:s}
+.st{background:#fff;border:1px solid var(--line);border-radius:14px;padding:24px}
+.st .n{font-size:14px;font-weight:900;color:var(--p);margin-bottom:10px}
+.st h3{font-size:16px;margin-bottom:6px}
+.st p{font-size:13.5px;color:var(--ink3)}
+.privacy{background:#16181D;color:#E8EBF0;border-radius:18px;padding:36px;display:grid;grid-template-columns:1fr 1fr;gap:30px}
+.privacy h2{color:#fff;font-size:24px;font-weight:900;margin-bottom:10px}
+.privacy p{color:#B7BEC9;font-size:14.5px}
+.privacy ul{list-style:none}
+.privacy li{font-size:14px;padding:9px 0 9px 30px;position:relative;border-top:1px solid #2A2D33}
+.privacy li::before{content:"";position:absolute;left:2px;top:15px;width:13px;height:8px;border-left:2px solid #5BC594;border-bottom:2px solid #5BC594;transform:rotate(-45deg)}
+.shots{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.shot{border:2px dashed #CBD2DB;border-radius:14px;height:230px;display:grid;place-items:center;color:var(--ink3);font-size:13.5px;text-align:center;padding:20px}
+footer{padding:36px 0;text-align:center;color:var(--ink3);font-size:13px}
+@media(max-width:860px){.hero{grid-template-columns:1fr}.feat,.steps,.shots{grid-template-columns:1fr}.privacy{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<nav class="wrap">
+  <div class="lg"><i><svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 18V6l8 6 8-6v12" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></i>快递取件</div>
+  <a class="gh" href="https://github.com/On-aroll/pickup-code-launcher" target="_blank" rel="noopener">GitHub 仓库</a>
+</nav>
+
+<div class="wrap">
+  <div class="hero">
+    <div>
+      <span class="kick">Android · 全程离线</span>
+      <h1>驿站一堆件，截图一次，自动按地点分好</h1>
+      <p class="lead">把快递通知截图或短信文字批量导入，本机 OCR 识别取件码与取件点，整理成「按驿站 / 快递柜分组」的待取清单。取一件划一件，不再对着一串数字来回翻。</p>
+      <div class="btns">
+        <a class="btn pri" href="https://github.com/On-aroll/pickup-code-launcher/releases/latest" target="_blank" rel="noopener">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M5 21h14" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          下载最新版 APK</a>
+        <a class="btn ghost" href="https://github.com/On-aroll/pickup-code-launcher" target="_blank" rel="noopener">查看源码</a>
+      </div>
+      <div class="mininote">免费开源（MIT）· 模型随安装包内置，无需额外下载 · 识别结果请人工核对</div>
+    </div>
+    <div class="phone">
+      <div class="ph-h"><span>待取</span><span>共 6 件 · 3 个地点</span></div>
+      <div class="ph-tabs"><span class="on">待取</span><span>待核对</span><span>已取</span></div>
+      <div class="grp"><div class="gt">菜鸟驿站（东区店）<em>3 件</em></div><div class="codes"><i>083620</i><i>A-02-0038</i><i>2-103-4567</i></div></div>
+      <div class="grp"><div class="gt">丰巢快递柜（南门）<em>2 件</em></div><div class="codes"><i>551208</i><i>774310</i></div></div>
+      <div class="grp"><div class="gt">京东快递点<em>1 件</em></div><div class="codes"><i>9-207-1182</i></div></div>
+    </div>
+  </div>
+</div>
+
+<section><div class="wrap sh">
+  <h2>它能帮你做什么</h2>
+  <p>不是又一个"快捷方式合集"，而是把零散通知真正整理成一张可执行的取件表。</p>
+  <div class="feat">
+    <div class="fc"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="14" rx="2" stroke="#E8612C" stroke-width="2"/><path d="M7 9h10M7 13h6" stroke="#E8612C" stroke-width="2" stroke-linecap="round"/></svg></div><h3>批量截图导入</h3><p>一次最多 30 张，支持长截图分段；也可直接粘贴多条通知文字。</p></div>
+    <div class="fc"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 21s7-5.2 7-11a7 7 0 10-14 0c0 5.8 7 11 7 11z" stroke="#E8612C" stroke-width="2"/><circle cx="12" cy="10" r="2.4" stroke="#E8612C" stroke-width="2"/></svg></div><h3>按取件点分组</h3><p>识别驿站、门店、快递柜名称与地址，自动归组并计数。</p></div>
+    <div class="fc"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h10" stroke="#E8612C" stroke-width="2" stroke-linecap="round"/></svg></div><h3>识别多种取件码</h3><p>数字码、字母数字码、横杠货架码都能提取，一条通知多件自动拆开。</p></div>
+    <div class="fc"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4v5c0 5-3.5 7.5-8 9-4.5-1.5-8-4-8-9V7l8-4z" stroke="#E8612C" stroke-width="2" stroke-linejoin="round"/><path d="M9 12l2 2 4-4" stroke="#E8612C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>先核对再确认</h3><p>所有识别结果先进"待核对"，可对照原文修改，不擅自删件。</p></div>
+    <div class="fc"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 8h14M7 8V6a2 2 0 012-2h6a2 2 0 012 2v2M6 8l1 12h10l1-12" stroke="#E8612C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>取完划掉</h3><p>标记已取、误取可恢复；可搜索、可复制本站清单或总表。</p></div>
+    <div class="fc"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M7 3h7l4 4v14H7z" stroke="#E8612C" stroke-width="2" stroke-linejoin="round"/><path d="M10 12l2 2 3-4" stroke="#E8612C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div><h3>保留平台入口</h3><p>菜鸟 / 淘宝 / 拼多多 / 京东 / 小红书 / 抖音等取件与订单快捷入口都在。</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap sh">
+  <h2>三步用起来</h2>
+  <p>第一次使用也不用注册、不用登录。</p>
+  <div class="steps">
+    <div class="st"><div class="n">第 1 步</div><h3>导入截图或通知</h3><p>选"导入多张截图"或"粘贴通知"，保留地点和码，不必只裁数字。</p></div>
+    <div class="st"><div class="n">第 2 步</div><h3>在待核对里确认</h3><p>核对码、地点、地址与原文，完整项可批量确认。</p></div>
+    <div class="st"><div class="n">第 3 步</div><h3>按地点取件</h3><p>到一个驿站取完该站所有件，点"已取"，可复制清单分享。</p></div>
+  </div>
+</div></section>
+
+<section><div class="wrap">
+  <div class="privacy">
+    <div><h2>隐私是默认设置</h2><p>识别在本机完成，不设服务器、不要网络权限；你的取件数据只留在这台手机。</p></div>
+    <ul>
+      <li>不读取短信、通知栏或账号数据</li>
+      <li>不申请全相册访问，只读你主动选择的图片</li>
+      <li>不保存原始截图、不上传任何内容</li>
+      <li>清单不进入系统云备份，卸载前请自行备份</li>
+    </ul>
+  </div>
+</div></section>
+
+<section><div class="wrap sh">
+  <h2>应用截图</h2>
+  <p>下面为真机截图预留位置，补充后替换即可（当前为占位）。</p>
+  <div class="shots">
+    <div class="shot">待取清单<br>（按地点分组）</div>
+    <div class="shot">待核对<br>（对照原文修改）</div>
+    <div class="shot">导入截图<br>（批量识别）</div>
+  </div>
+</div></section>
+
+<footer class="wrap">
+  快递取件 · 免费开源（MIT License）<br>
+  <a href="https://github.com/On-aroll/pickup-code-launcher" target="_blank" rel="noopener">github.com/On-aroll/pickup-code-launcher</a> · OCR 结果请人工核对，不承诺真实场景准确率
+</footer>
+</body>
+</html>
