@@ -1,5 +1,20 @@
 # 快递取件
 
+<div align="center">
+
+**把快递通知截图，整理成「按取件地点分组」的待取清单 · 全程离线**
+
+[![最新版本](https://img.shields.io/github/v/release/On-aroll/pickup-code-launcher?color=E8612C&label=%E6%9C%80%E6%96%B0%E7%89%88%E6%9C%AC)](https://github.com/On-aroll/pickup-code-launcher/releases/latest)
+[![许可证](https://img.shields.io/github/license/On-aroll/pickup-code-launcher?color=2F7D5B)](LICENSE)
+
+### [下载最新版 APK](https://github.com/On-aroll/pickup-code-launcher/releases/latest)
+
+[在线产品页（功能介绍）](https://on-aroll.github.io/pickup-code-launcher/) · 不读短信 / 账号 · 无需联网权限
+
+</div>
+
+---
+
 一个把截图、短信文字中的快递通知整理成「按取件地点分组的待取清单」的 Android 工具。保留各平台快捷入口，附带的网页版仍是入口集合，不具备 Android 清单功能。
 
 作者：EyanLiu。本仓库从 [EidenLiu/pickup-code-launcher](https://github.com/EidenLiu/pickup-code-launcher) 迁移并继续维护。
@@ -76,7 +91,7 @@ https://github.com/On-aroll/pickup-code-launcher/releases/latest
 
 ### v2.5.9（2026-09-14）
 
-- 抖音入口改为在 App 内打开官方商城网页版（带登录态），内含「我的订单」入口
+- 抖音入口改为 App 内打开官方商城网页版（带登录态），内含「我的订单」入口
 
 ### v2.5.8（2026-09-14）
 
